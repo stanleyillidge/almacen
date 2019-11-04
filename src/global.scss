@@ -24,3 +24,44 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+app-tabs {
+    background: linear-gradient(0deg, rgba(20,30,40,1) 0%, rgba(30,50,70,1) 100%) !important;
+}
+.split-pane-md{
+    --border: none !important;
+}
+.buscar-top{
+    font-size: 1.65em;
+    margin: 0 0.35em 0 0;
+    color: #b4b4c8;
+}
+ion-menu{
+    --background: linear-gradient(0deg, rgba(20,30,40,1) 0%, rgba(30,50,70,1) 100%) !important;
+}
+ion-header{
+    background: transparent !important;
+    color: white;
+}
+ion-toolbar{
+    --background: transparent !important;
+    color: white;
+}
+ion-content{
+    --background: transparent !important;
+    color: white;
+}
+ion-tab-bar{
+    --background: transparent !important;//#3c5064 !important;
+    color: white;
+}
+.tab-selected{
+    color: #ffffff !important;
+}
+ion-item{
+    --background: #324664 !important;
+}
+ion-list{
+    background: transparent !important;
+    color: white;
+}

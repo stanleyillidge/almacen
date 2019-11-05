@@ -56,10 +56,13 @@ ion-tab-bar{
     color: white;
 }
 .tab-selected{
-    color: #ffffff !important;
+    color: var(--selected) !important;
+}
+ion-card{
+    --background: var(--items) !important;
 }
 ion-item{
-    --background: #324664 !important;
+    --background: var(--items) !important;
 }
 ion-list{
     background: transparent !important;

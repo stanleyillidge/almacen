@@ -2,28 +2,37 @@
 
   <ion-fab slot="bottom" class="custom-fab">
     <ion-fab-button class="fab" (ionBlur)="blur()" (click)="click()">
-        <ion-icon name="settings"></ion-icon>
+      <ion-icon name="settings"></ion-icon>
     </ion-fab-button>
-    <ion-fab-list side="top">
-      <ion-fab-button (click)="click()"><ion-icon name="logo-vimeo"></ion-icon></ion-fab-button>
+    <ion-fab-list style="top: -2em;" side="start" (click)="click()">
+      <ion-fab-button>
+        <ion-icon class="start" name="add-circle">
+      </ion-icon></ion-fab-button>
+      <ion-label>Ingreso</ion-label>
     </ion-fab-list>
-    <ion-fab-list style="top: -2em;" side="start">
-      <ion-fab-button (click)="click()"><ion-icon name="logo-instagram"></ion-icon></ion-fab-button>
+    <ion-fab-list side="top" (click)="click()">
+      <ion-fab-button>
+        <ion-icon class="top" name="card"></ion-icon>
+      </ion-fab-button>
+      <ion-label>Salida</ion-label>
     </ion-fab-list>
-    <ion-fab-list style="top: -2em;" side="end">
-      <ion-fab-button (click)="click()"><ion-icon name="logo-twitter"></ion-icon></ion-fab-button>
+    <ion-fab-list style="top: -2em;" side="end" (click)="click()">
+      <ion-fab-button>
+        <ion-icon class="end" name="git-branch">
+      </ion-icon></ion-fab-button>
+      <ion-label>Movimiento</ion-label>
     </ion-fab-list>
   </ion-fab>
   
   <ion-tab-bar slot="bottom" no-border>
 
-    <ion-tab-button class="tab1" tab="tab1">
-      <ion-icon name="apps"></ion-icon>
+    <ion-tab-button class="Dashboard" tab="Dashboard">
+      <ion-icon name="business"></ion-icon>
       <!-- <ion-label>Tab One</ion-label> -->
     </ion-tab-button>
 
-    <ion-tab-button class="tab2" >
-      <!-- <ion-icon name="analytics"></ion-icon> -->
+    <ion-tab-button class="inventario" tab="inventario">
+      <ion-icon name="analytics"></ion-icon>
       <!-- <ion-label>Tab Two</ion-label> -->
     </ion-tab-button>
 
@@ -32,13 +41,13 @@
       <!-- <ion-label>Tab Two</ion-label> -->
     </ion-tab-button>
 
-    <ion-tab-button class="tab4" >
-      <!-- <ion-icon name="analytics"></ion-icon> -->
+    <ion-tab-button tab="resumen">
+      <ion-icon name="analytics"></ion-icon>
       <!-- <ion-label>Tab Two</ion-label> -->
     </ion-tab-button>
 
-    <ion-tab-button class="tab5" tab="tab3">
-      <ion-icon name="send"></ion-icon>
+    <ion-tab-button class="barcode">
+      <ion-icon name="barcode"></ion-icon>
       <!-- <ion-label>Tab Three</ion-label> -->
     </ion-tab-button>
   </ion-tab-bar>

@@ -1,21 +1,37 @@
-.tab2{
-    display: block;
-}
-.tab3{
-    display: block;
-    max-width: 168px !important;
-}
-.tab4{
-    display: block;
-}
+// ---- General -----------
+    ion-tab-button{        
+        max-width: 168px !important;
+    }
+    .top{
+        color: var(--selected);
+        font-size: x-large;
+    }
+    .start{
+        color: var(--selected);
+        font-size: x-large;
+    }
+    .end{
+        color: var(--selected);
+        font-size: x-large;
+    }
+    .barcode{
+        border-radius: 3em 0 0;
+        background: var(--selected);
+        bottom: 2em;
+        ion-icon{
+            color: var(--items);
+        }
+    }
+    ion-label{
+        color: white;
+        font-size: small;
+    }
+// ------------------------
 @media (max-width: 412px) {
-    .tab2{
-        display: none;
+    ion-tab-button{        
+        max-width: 5.5em !important;
     }
     .tab3{
-        max-width: 3em !important;
-    }
-    .tab4{
-        display: none;
+        max-width: 9em !important;
     }
 }

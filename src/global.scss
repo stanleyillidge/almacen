@@ -80,10 +80,25 @@ ion-list{
     background: transparent !important;
     color: white;
 }
+.barcode-button{
+    position: absolute;
+    z-index: 99;
+    bottom: 0px;
+    right: 0;
+    width: 66px;
+    height: 56px;
+    border-radius: 3em 0 0;
+    background: var(--selected);
+    ion-icon{
+        color: var(--items);
+        font-size: 2.8em;
+        margin: 5px -5px 0 0;
+    }
+}
 // --- Fabs -----------------
     .custom-fab {
         bottom: 28px;
-        right: 42%;
+        right: 48%;
     }
     .blur {
         opacity: 0.2;
@@ -102,5 +117,10 @@ ion-list{
     }
     .fab-button-close-active{
         --box-shadow: 0 3px 5px -1px #F44336,0 6px 10px 0 rgba(0,0,0,0.14),0 1px 18px 0 var(--selected);
+    }
+    @media (max-width: 412px) {
+        .custom-fab {
+            right: 42%;
+        }
     }
 // --------------------------

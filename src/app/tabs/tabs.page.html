@@ -4,19 +4,19 @@
     <ion-fab-button class="fab" (ionBlur)="blur()" (click)="click()">
       <ion-icon name="settings"></ion-icon>
     </ion-fab-button>
-    <ion-fab-list style="top: -2em;" side="start" (click)="click()">
+    <ion-fab-list style="top: -2em;" side="start" (click)="click('entradas')">
       <ion-fab-button>
         <ion-icon class="start" name="add-circle">
       </ion-icon></ion-fab-button>
       <ion-label>Ingreso</ion-label>
     </ion-fab-list>
-    <ion-fab-list side="top" (click)="click()">
+    <ion-fab-list side="top" (click)="click('salidas')">
       <ion-fab-button>
         <ion-icon class="top" name="card"></ion-icon>
       </ion-fab-button>
       <ion-label>Salida</ion-label>
     </ion-fab-list>
-    <ion-fab-list style="top: -2em;" side="end" (click)="click()">
+    <ion-fab-list style="top: -2em;" side="end" (click)="click('movimientos')">
       <ion-fab-button>
         <ion-icon class="end" name="git-branch">
       </ion-icon></ion-fab-button>

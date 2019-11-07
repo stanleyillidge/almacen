@@ -33,7 +33,9 @@ $Textos: 'Varela', sans-serif;
 // font-family: 'Varela', sans-serif;
 // font-family: 'Eczar', serif;
 /* ---------------------------------- */
-
+.ion-page{
+    background: linear-gradient(0deg, rgba(20,30,40,1) 0%, rgba(30,50,70,1) 100%) !important;
+}
 app-tabs {
     background: linear-gradient(0deg, rgba(20,30,40,1) 0%, rgba(30,50,70,1) 100%) !important;
 }

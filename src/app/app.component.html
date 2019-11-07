@@ -1,34 +1,32 @@
 <ion-app>
-  <ion-split-pane>
-    <ion-menu>
-      <ion-header>
-        <ion-toolbar>
-          <ion-img src='assets/images/logo_denzil.png'></ion-img>
-          <ion-title>Su empresa</ion-title>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content>
-        <ion-list>
-          <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages">
-            <ion-item [routerDirection]="'root'" [routerLink]="[p.url]">
-              <ion-icon slot="start" [name]="p.icon"></ion-icon>
-              <ion-label>
-                {{p.title}}
-              </ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-          <ion-item (click)="SignOut()">
-              <ion-icon slot="start" name="close"></ion-icon>
+  <ion-menu side="start" menuId="first" contentId="content1">
+    <ion-header>
+      <ion-toolbar>
+        <ion-img src='assets/images/logo_denzil.png'></ion-img>
+        <ion-title>Su empresa</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages">
+          <ion-item [routerDirection]="'root'" [routerLink]="[p.url]">
+            <ion-icon slot="start" [name]="p.icon"></ion-icon>
             <ion-label>
-              SignOut
+              {{p.title}}
             </ion-label>
           </ion-item>
-          <ion-item>
-            Version 0.0.1
-          </ion-item>
-        </ion-list>
-      </ion-content>
-    </ion-menu>
-    <ion-router-outlet main></ion-router-outlet>
-  </ion-split-pane>
+        </ion-menu-toggle>
+        <ion-item (click)="SignOut()">
+            <ion-icon slot="start" name="close"></ion-icon>
+          <ion-label>
+            SignOut
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          Version 0.0.1
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+  <ion-router-outlet id="content1"></ion-router-outlet>
 </ion-app>

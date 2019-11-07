@@ -25,6 +25,15 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
+/* ---- Fonts ----------------------- */
+@import url('https://fonts.googleapis.com/css?family=Eczar|Tajawal|Varela&display=swap');
+$Numeros: 'Eczar', serif;
+$Textos: 'Varela', sans-serif;
+// font-family: 'Tajawal', sans-serif;
+// font-family: 'Varela', sans-serif;
+// font-family: 'Eczar', serif;
+/* ---------------------------------- */
+
 app-tabs {
     background: linear-gradient(0deg, rgba(20,30,40,1) 0%, rgba(30,50,70,1) 100%) !important;
 }
@@ -34,7 +43,7 @@ app-tabs {
 .buscar-top{
     font-size: 1.65em;
     margin: 0 0.35em 0 0;
-    color: #b4b4c8;
+    // color: #b4b4c8;
 }
 ion-menu{
     --background: linear-gradient(0deg, rgba(20,30,40,1) 0%, rgba(30,50,70,1) 100%) !important;
@@ -48,6 +57,7 @@ ion-toolbar{
     color: white;
 }
 ion-content{
+    // font-family: $Textos;
     --background: transparent !important;
     color: white;
 }
@@ -68,3 +78,23 @@ ion-list{
     background: transparent !important;
     color: white;
 }
+// --- Fabs -----------------
+    .custom-fab {
+        bottom: 28px;
+        right: 42%;
+    }
+    .blur {
+        opacity: 0.2;
+        filter: blur(5px);
+        -webkit-filter: blur(5px);
+        transition: -webkit-filter 10ms linear;
+    }
+    .fab{
+        --background: var(--selected) !important;
+        --color: var(--items) !important;
+        --background-activated: var(--background);
+        --background-focused: var(--background-activated);
+        --color-activated: var(--items) !important;
+        --color-focused: var(--items) !important;
+    }
+// --------------------------

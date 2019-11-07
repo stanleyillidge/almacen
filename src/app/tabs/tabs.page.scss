@@ -1,1 +1,21 @@
-
+.tab2{
+    display: block;
+}
+.tab3{
+    display: block;
+    max-width: 168px !important;
+}
+.tab4{
+    display: block;
+}
+@media (max-width: 412px) {
+    .tab2{
+        display: none;
+    }
+    .tab3{
+        max-width: 3em !important;
+    }
+    .tab4{
+        display: none;
+    }
+}

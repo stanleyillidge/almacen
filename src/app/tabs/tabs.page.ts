@@ -12,7 +12,9 @@ export class TabsPage {
   public toggle: ReplaySubject<any> = new ReplaySubject<any>();
   constructor(
     public navCtrl: NavController
-  ) {}
+  ) {
+    this.toggle_ = false;
+  }
   blur(){
     this.toggle_ = false;
     this.toggle.next(this.toggle_)

@@ -80,20 +80,28 @@ ion-list{
     background: transparent !important;
     color: white;
 }
-.barcode-button{
+.almacen-button{
     position: absolute;
     z-index: 99;
     bottom: 0px;
-    right: 0;
+    margin: 0;
+    padding: 0;
     width: 66px;
     height: 56px;
-    border-radius: 3em 0 0;
-    background: var(--selected);
+    --background: var(--selected);
     ion-icon{
         color: var(--items);
-        font-size: 2.8em;
-        margin: 5px -5px 0 0;
+        font-size: 2.5em;
+        margin: 7px -5px 0 0;
     }
+}
+.almacen-button.barcode{
+    right: 0;
+    --border-radius: 2.6em 0 0;
+}
+.almacen-button.ingreso{
+    left: 0;
+    --border-radius: 0 2.6em 0 0;
 }
 // --- Fabs -----------------
     .custom-fab {

@@ -11,6 +11,7 @@ export class DashboardPage {
   constructor(
     public tab:TabsPage
   ) {
+    this.toggle = false;
     this.tab.toggle.subscribe((newData) => {
       this.toggle = newData
     });

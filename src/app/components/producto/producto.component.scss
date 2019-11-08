@@ -1,0 +1,22 @@
+.imagen{
+    width: 20vh;
+    height: 22vh;
+    margin: 0px 1em 0 -1em;
+}
+ion-item {
+    border-radius: 0.35em;
+    --background: var(--items) !important;
+    box-shadow: 0px -1px 0px 0px #9E9E9E;
+}
+h2{
+    white-space: normal;
+}
+.data{
+    display: block;
+    font-size: 2.4ch;
+    margin: 0.7ch 0 0 0;
+    // font-family: "Eczar", serif;
+    -webkit-transform: scaleY(1.2);
+    transform: scaleY(1.2);
+    letter-spacing: 0.175ch;
+  }

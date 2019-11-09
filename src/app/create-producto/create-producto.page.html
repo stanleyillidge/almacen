@@ -12,10 +12,10 @@
 
 <ion-content class="ion-padding" no-border>
   <form [formGroup]="newProductoForm" padding-right>
-    <ion-img *ngIf="ds.plataforma.cordova" (click)="camara()" [src]="Path"></ion-img>
+    <ion-img *ngIf="ds.plataforma.cordova" (click)="camara()" [src]="newProductoForm.value.imagen"></ion-img>
     <label *ngIf="ds.plataforma.desktop">
       <input type="file" style="display: none;" class="button" (change)="onFile($event)">
-      <img class="user-image" src="{{Path}}">
+      <img class="user-image" src="{{newProductoForm.value.imagen}}">
     </label>
     <ion-item>
       <ion-label>Nombre</ion-label>
@@ -23,7 +23,11 @@
     </ion-item>
     <ion-item>
       <ion-label>Tipo</ion-label>
-      <ion-input type="text" formControlName="tipo"></ion-input>
+      <ion-select formControlName="tipo" placeholder="Seleccionar tipo">
+        <ion-select-option value="producto">Producto</ion-select-option>
+        <ion-select-option value="mueble">Mueble</ion-select-option>
+        <ion-select-option value="consumible">Consumible</ion-select-option>
+      </ion-select>
     </ion-item>
     <ion-item>
       <ion-label>Precio de venta</ion-label>
@@ -31,26 +35,20 @@
     </ion-item>
     
     <ion-row>
-      <!-- <ion-col>
-        <ion-button expand="full" (click)="navCtrl.pop()">Cancelar</ion-button>
-      </ion-col> -->
-      <!-- <ion-col *ngIf="accion == 'consultar'">
-        <ion-button class="consultar" expand="full" [disabled]="!newProductoForm.valid" (click)="creaContrato()">Crear</ion-button>
-      </ion-col> -->
-      <!-- <ion-col *ngIf="accion == 'crear'">
-        <ion-button expand="full" [disabled]="!newProductoForm.valid" (click)="editaUsuario()">Aprobar</ion-button>
-      </ion-col> -->
+      
       <ion-button
       class="almacen-button izquierdo"
       (click)="navCtrl.pop()">
         <ion-icon name="remove-circle"></ion-icon>
       </ion-button>
+
       <ion-button *ngIf="accion == 'crear'"
       class="almacen-button derecho"
       [disabled]="!newProductoForm.valid"
-      (click)="editaUsuario()">
+      (click)="creaProducto()">
         <ion-icon name="add-circle"></ion-icon>
       </ion-button>
+
     </ion-row>
     
   </form>

@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./entradas.page.scss'],
 })
 export class EntradasPage implements OnInit {
-
+  toggle:boolean = false;
   constructor() { }
 
   ngOnInit() {

@@ -27,6 +27,10 @@ export class CreateProductoPage implements OnInit {
   creaFormulario(data){
     //-------------------
       this.newProductoForm = this.fb.group({
+        imagen: new FormControl(data.imagen, Validators.compose([
+          Validators.required,
+          // Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
+        ])),
         nombre: new FormControl(data.nombre, Validators.compose([
           Validators.required,
           // Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
@@ -46,11 +50,17 @@ export class CreateProductoPage implements OnInit {
   }
   creaFormularioVacio(){
     let data = []
+    data['imagen'] = "/assets/shapes.svg";
     data['nombre'] = ''
     data['tipo'] = ''
     data['precio'] = 0
     this.creaFormulario(data);
   }
+  creaProducto(){
+    console.log( this.newProductoForm.value)
+  }
+  camara(){}
+  onFile(e){}
   ngOnInit() {
   }
 

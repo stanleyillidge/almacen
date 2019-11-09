@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./salidas.page.scss'],
 })
 export class SalidasPage implements OnInit {
-
+  toggle:boolean = false;
   constructor() { }
 
   ngOnInit() {

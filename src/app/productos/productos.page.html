@@ -11,17 +11,15 @@
 </ion-header>
 
 <ion-content [ngClass]="{ 'blur' : toggle }" class="ion-padding" no-border>
-  <ion-list>
-    <producto [data]=data></producto>
-  </ion-list>
+  <producto [data]=data></producto>
 </ion-content>
 <ion-button class="almacen-button derecho">
   <ion-icon name="barcode"></ion-icon>
 </ion-button>
-<!-- <ion-button class="almacen-button izquierdo" (click)="page('create-producto')">
+<ion-button class="almacen-button izquierdo" (click)="page('create-producto')">
   <ion-icon name="add-circle"></ion-icon>
-</ion-button> -->
-<ion-fab horizontal="start" vertical="bottom" slot="fixed">
+</ion-button>
+<!-- <ion-fab horizontal="start" vertical="bottom" slot="fixed">
   <ion-fab-button class="almacen-button fab izquierdo" (click)="page()">
     <ion-icon name="add-circle"></ion-icon>
   </ion-fab-button>
@@ -30,9 +28,9 @@
       <ion-icon class="fab-icon" name="cube"></ion-icon>
     </ion-fab-button>
     <ion-label class="label uno" (click)="page('create-producto')">Crear producto</ion-label>
-    <ion-fab-button class="fab-button" color="light" (click)="page()">
+    <ion-fab-button class="fab-button" color="light" (click)="creaTipo()">
       <ion-icon class="fab-icon" name="albums"></ion-icon>
     </ion-fab-button>
-    <ion-label class="label dos" (click)="page()">Crear tipo</ion-label>
+    <ion-label class="label dos" (click)="creaTipo()">Crear tipo</ion-label>
   </ion-fab-list>
-</ion-fab>
+</ion-fab> -->

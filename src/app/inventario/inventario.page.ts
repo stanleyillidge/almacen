@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
   styleUrls: ['inventario.page.scss']
 })
 export class inventarioPage {
-
+  toggle:boolean = false;
   constructor() {}
 
 }

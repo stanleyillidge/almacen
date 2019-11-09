@@ -35,7 +35,8 @@ export class AppComponent {
 
   initializeApp() {
     this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
+      // this.statusBar.styleDefault();
+      this.statusBar.backgroundColorByHexString('#1e3246')
       this.splashScreen.hide();
     });
   }
@@ -44,4 +45,5 @@ export class AppComponent {
       this.navCtrl.navigateForward([page]);
     }
   }
+  SignOut(){}
 }

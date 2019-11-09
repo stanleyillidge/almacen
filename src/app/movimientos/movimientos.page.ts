@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./movimientos.page.scss'],
 })
 export class MovimientosPage implements OnInit {
-
+  toggle:boolean = false;
   constructor() { }
 
   ngOnInit() {

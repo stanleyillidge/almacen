@@ -95,15 +95,34 @@ ion-list{
         margin: 7px -5px 0 0;
     }
 }
-.almacen-button.barcode{
+.almacen-button.fab.izquierdo{
+    margin: 0 0 -10px -10px;
+}
+.almacen-button.derecho{
     right: 0;
     --border-radius: 2.6em 0 0;
 }
-.almacen-button.ingreso{
+.almacen-button.izquierdo{
     left: 0;
     --border-radius: 0 2.6em 0 0;
 }
 // --- Fabs -----------------
+    .label{
+        position: absolute;
+        color: white;
+        left: 4em;
+        width: 10em;
+    }
+    .label.uno{
+        bottom: 1em;
+    }
+    .label.dos{
+        bottom: 4em;
+    }
+    .fab-icon{
+        color: var(--selected);
+        font-size: x-large;
+    }
     .custom-fab {
         bottom: 28px;
         right: 48%;

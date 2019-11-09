@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-productos',
@@ -7,8 +8,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ProductosPage implements OnInit {
   data:any=[];
-  constructor() { }
-
+  toggle:boolean = false;
+  constructor(
+    public navCtrl: NavController
+  ) {
+    this.toggle = false;
+  }
+  blur(){
+    this.toggle = false;
+  }
+  page(page){
+    this.toggle = !this.toggle;
+    if(page){
+      this.navCtrl.navigateForward([page,{accion:'crear'}]);
+    }
+  }
   ngOnInit() {
     for(let i = 1;i<40;i++){
       this.data.push({
@@ -18,5 +32,4 @@ export class ProductosPage implements OnInit {
       })
     }
   }
-
 }

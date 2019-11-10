@@ -15,10 +15,9 @@
         public key: string // PushID de la bodega
             public nombre: string
             public codigo: string // ID unico para identificar la bodega
-            public cantidad: number // numero total de productos
+            public cantidad: number // numero total de productos, se calcula con base al inventario
             public descripcion: string
             public imagen: string
-            public modificacion: string // ojo definir esquema
             public largo: number // largo en metros[m] de la bodega
             public ancho: number // ancho en metros[m] de la bodega
             public alto: number // alto en metros[m] de la bodega
@@ -124,7 +123,7 @@
             public salida: Date | null
             public traslado: Date | null
             public producto: string // PushID del Producto
-            public vencimiento: number // nuemero de dias[d] que el tiene el producto para ser consumible
+            public vencimiento: Date // nuemero de dias[d] que el tiene el producto para ser consumible [cron job]
             public tipo: 'consumible' | 'mueble' | 'producto' // campo heredado del Producto
             public cantidad: number // campo heredado de la ListaDetallada
             public precio: number // campo heredado del Producto
@@ -136,7 +135,7 @@
         constructor() {
             // condiciones iniciales
             if (!this.vencimiento && (this.tipo =='consumible' || this.tipo == 'producto')) {
-                this.vencimiento = 0;
+                // this.vencimiento = 0;
             }
         }
     }

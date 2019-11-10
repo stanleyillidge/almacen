@@ -33,23 +33,39 @@
       <ion-label>Precio de venta</ion-label>
       <ion-input type="Number" formControlName="precio"></ion-input>
     </ion-item>
-    
-    <ion-row>
-      
-      <ion-button
-      class="almacen-button izquierdo"
-      (click)="navCtrl.pop()">
-        <ion-icon name="remove-circle"></ion-icon>
-      </ion-button>
-
-      <ion-button *ngIf="accion == 'crear'"
-      class="almacen-button derecho"
-      [disabled]="!newProductoForm.valid"
-      (click)="creaProducto()">
-        <ion-icon name="add-circle"></ion-icon>
-      </ion-button>
-
-    </ion-row>
+    <ion-item>
+      <ion-label>Descripcion</ion-label>
+      <ion-input type="text" formControlName="descripcion"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Largo</ion-label>
+      <ion-input type="Number" formControlName="largo"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Ancho</ion-label>
+      <ion-input type="Number" formControlName="ancho"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Alto</ion-label>
+      <ion-input type="Number" formControlName="alto"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Disponibilidad</ion-label>
+      <ion-toggle formControlName="disponibilidad" color="danger"></ion-toggle>
+    </ion-item>
     
   </form>
 </ion-content>
+
+<ion-button
+class="almacen-button izquierdo"
+(click)="navCtrl.pop()">
+  <ion-icon name="remove-circle"></ion-icon>
+</ion-button>
+
+<ion-button *ngIf="accion == 'crear'"
+class="almacen-button derecho"
+[disabled]="!newProductoForm.valid"
+(click)="creaProducto()">
+  <ion-icon name="add-circle"></ion-icon>
+</ion-button>

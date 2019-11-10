@@ -1,0 +1,17 @@
+// ---- Vista de escritorio --------
+    ion-item{
+        width: 50ch;
+    }
+// ---- Vista de tablets -----------
+    @media (max-width: 840px) {
+        ion-item{
+            width: 35ch;
+        }
+    }
+// ---- Vista de los mviles --------
+    @media (max-width: 412px) {
+        ion-item{
+            width: 100%;
+        }
+    }
+// ---------------------------------

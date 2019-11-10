@@ -1,4 +1,4 @@
-// ---- Basicos -----------------
+// ---- Basicos ----------------- jgfjgkgkgkg
     export class Usuario{ // en la Base de datos guardar por rol como key principal
         public key: string // UID generado desde el Auth
             public rol: 'admin' | 'empleado' | 'proveedor' | 'cliente'
@@ -49,7 +49,7 @@
         }
     }
     export class Documentos{
-        public key: string // PushID del documento holaaa
+        public key: string // PushID del documento
             public tipo: 'ingreso' | 'salida' | 'traslado' | 'notaDebito' | 'notaCredito'
             public creacion: Date
             public estado: 'pagado' | 'pendiente' | 'anulado'

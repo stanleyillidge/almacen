@@ -10,6 +10,10 @@
     }
 // ---- Vista de los mviles --------
     @media (max-width: 412px) {
+        form{
+            margin: 0 0 0 8vw;
+            width: 75vw;
+        }
         ion-item{
             width: 100%;
         }

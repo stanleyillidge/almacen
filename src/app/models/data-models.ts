@@ -34,9 +34,6 @@
             if (!this.cantidad) {
                 this.cantidad = 0;
             }
-            if (!this.modificacion) {
-                this.modificacion = "";
-            }
             if (!this.descripcion) {
                 this.descripcion = "";
             }

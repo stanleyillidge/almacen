@@ -11,7 +11,7 @@ import { ReplaySubject } from 'rxjs';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
-import { LocalDatabase, Producto } from './data-models';
+import { LocalDatabase, Producto } from './data-models'; // hola
 
 @Injectable()
 export class DataService {
@@ -42,7 +42,7 @@ export class DataService {
         // this.storage.clear();// quitar cuando este en produccion
     }
     // ---- Imagenes ----------------------------------------------
-        async creaProducto(formulario:any,articulo:Producto,src:Uint8Array | Blob,newEtiqueta:boolean) {
+        /* async creaProducto(formulario:any,articulo:Producto,src:Uint8Array | Blob,newEtiqueta:boolean) {
             let este = this
             const loading = await this.loadingController.create({
                 message: 'Actualizando...'
@@ -124,6 +124,6 @@ export class DataService {
                     return
                 });
             });
-        }
+        }*/
     // ------------------------------------------------------------
 }

@@ -49,7 +49,7 @@
         }
     }
     export class Documentos{
-        public key: string // PushID del documento
+        public key: string // PushID del documento holaaa
             public tipo: 'ingreso' | 'salida' | 'traslado' | 'notaDebito' | 'notaCredito'
             public creacion: Date
             public estado: 'pagado' | 'pendiente' | 'anulado'

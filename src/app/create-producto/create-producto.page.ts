@@ -18,6 +18,8 @@ export class CreateProductoPage implements OnInit {
   accion:string;
   Path: any = "/assets/shapes.svg";
   imagen: File | Blob | Uint8Array;
+  key: string;
+  producto: any;
   constructor(
     public navCtrl: NavController,
     public fb: FormBuilder,
@@ -30,6 +32,11 @@ export class CreateProductoPage implements OnInit {
     this.accion = this.route.snapshot.paramMap.get('accion');
     if(this.accion =='crear'){
       this.creaFormularioVacio()
+    }else{
+      this.key = this.route.snapshot.paramMap.get('key');
+      this.producto = this.ds.Database.Productos[this.key];
+      console.log(this.producto)
+      this.creaFormulario(this.producto)
     }
   }
   creaFormulario(data){
@@ -58,7 +65,8 @@ export class CreateProductoPage implements OnInit {
         largo: new FormControl(data.largo, Validators.compose([Validators.required])),
         ancho: new FormControl(data.ancho, Validators.compose([Validators.required])),
         alto: new FormControl(data.alto, Validators.compose([Validators.required])),
-        descuento: new FormControl(data.descuento, Validators.compose([Validators.required]))
+        descuento: new FormControl(data.descuento, Validators.compose([Validators.required])),
+        cantidad: new FormControl(data.cantidad, Validators.compose([Validators.required]))
       });
     //-------------------
   }
@@ -74,10 +82,15 @@ export class CreateProductoPage implements OnInit {
     data.ancho = 0;
     data.alto = 0;
     data.descuento = 0;
+    data.cantidad = 0;
     this.creaFormulario(data);
   }
   creaProducto(){
-    console.log( this.newProductoForm.value)
+    let este = this;
+    // console.log('Se envia',this.newProductoForm.value,this.imagen,this.accion,this.key)
+    this.ds.creaProducto(this.newProductoForm.value,this.imagen,this.accion,this.key).then(()=>{
+      este.navCtrl.pop()
+    })
   }
   camara(){
     const options: CameraOptions = {

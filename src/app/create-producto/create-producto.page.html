@@ -38,6 +38,10 @@
       <ion-input type="Number" formControlName="descuento"></ion-input>
     </ion-item>
     <ion-item>
+      <ion-label>Unidades por embalaje</ion-label>
+      <ion-input type="Number" formControlName="cantidad"></ion-input>
+    </ion-item>
+    <ion-item>
       <ion-label>Descripcion</ion-label>
       <ion-input type="text" formControlName="descripcion"></ion-input>
     </ion-item>
@@ -67,7 +71,7 @@ class="almacen-button izquierdo"
   <ion-icon name="remove-circle"></ion-icon>
 </ion-button>
 
-<ion-button *ngIf="accion == 'crear'"
+<ion-button
 class="almacen-button derecho"
 [disabled]="!newProductoForm.valid"
 (click)="creaProducto()">

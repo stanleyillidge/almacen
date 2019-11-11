@@ -2,6 +2,9 @@
     ion-item{
         width: 50ch;
     }
+    ion-input{
+        text-align: end !important;
+    }
 // ---- Vista de tablets -----------
     @media (max-width: 840px) {
         ion-item{

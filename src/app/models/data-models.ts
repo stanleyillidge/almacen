@@ -45,7 +45,7 @@
             return (this.alto * this.largo * this.ancho)
         }
     }
-    export class Documentos{
+    export class Documento{
         public key: string // PushID del documento
             public tipo: 'ingreso' | 'salida' | 'traslado' | 'notaDebito' | 'notaCredito'
             public creacion: Date
@@ -99,16 +99,47 @@
             public precio: number // precio de venta del producto [ solo el admin puede definirlo ]
             public descuento: number // porcentaje de descuento unitario [ solo el admin puede definirlo ]
         constructor() { 
+            if(!this.key){
+                this.key = ''
+            }
             if (!this.imagen) {
                 this.imagen = "/assets/shapes.svg";
             }
-            if (!this.nombre) {
-                this.nombre = "";
+            if(!this.creacion){
+                this.creacion = new Date()
             }
-            if (!this.cantidad && (this.tipo =='mueble')) {
-                this.cantidad = 1;
-                }else{
-                this.cantidad = 0;
+            if(!this.nombre){
+                this.nombre = ''
+            }
+            if(!this.tipo){
+                this.tipo = 'producto'
+            }
+            if(!this.imagen){
+                this.imagen = ''
+            }
+            if(!this.descripcion){
+                this.descripcion = ''
+            }
+            if(!this.disponibilidad){
+                this.disponibilidad = true
+            }
+            if(!this.largo){
+                this.largo = 0
+            }
+            if(!this.ancho){
+                this.ancho = 0
+            }
+            if(!this.alto){
+                this.alto = 0
+            }
+            if(!this.cantidad){
+                this.cantidad = 0
+            }
+            if(!this.precio){
+                this.precio = 0
+            }
+            if(!this.descuento){
+                this.descuento = 0
             }
         }
     }
@@ -138,6 +169,10 @@
     }
 // ---- Data Base ---------------
     export class LocalDatabase {
-        
+        public Bodegas: { [key: string]: Bodega };
+        public Documentos: { [key: string]: Documento };
+        public ListaDetalladas: { [key: string]: ListaDetallada };
+        public Productos: { [key: string]: Producto };
+        public Inventario: { [key: string]: Inventario };
     }
 // ------------------------------

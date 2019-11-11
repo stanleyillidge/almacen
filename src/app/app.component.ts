@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { Platform, NavController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { DataService } from './models/data-service';
 
 @Component({
   selector: 'app-root',
@@ -28,16 +29,19 @@ export class AppComponent {
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    public navCtrl: NavController
+    public navCtrl: NavController,
+    public ds:  DataService,
   ) {
     this.initializeApp();
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
-      // this.statusBar.styleDefault();
-      this.statusBar.backgroundColorByHexString('#1e3246')
-      this.splashScreen.hide();
+      this.ds.initDatabase().then(() => {
+        // this.statusBar.styleDefault();
+        this.statusBar.backgroundColorByHexString('#1e3246')
+        this.splashScreen.hide();
+      });
     });
   }
   page(page){

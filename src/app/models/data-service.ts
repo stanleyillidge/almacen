@@ -12,12 +12,12 @@ import { ReplaySubject } from 'rxjs';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
-import { LocalDatabase, Producto } from './data-models'; // hola stanley - jaider
+import { LocalDatabase, Producto, Bodega } from './data-models'; // hola stanley - jaider
 
 @Injectable()
 export class DataService {
     public ProductoObserver: ReplaySubject<any> = new ReplaySubject<any>();
-    // public UbicacionesObserver: ReplaySubject<any> = new ReplaySubject<any>();
+    public BodegaObserver: ReplaySubject<any> = new ReplaySubject<any>();
     // public SubUbicacionesObserver: ReplaySubject<any> = new ReplaySubject<any>();
     // public productoBaseObserver: ReplaySubject<any> = new ReplaySubject<any>();
     // public productosObserver: ReplaySubject<any> = new ReplaySubject<any>();
@@ -40,7 +40,7 @@ export class DataService {
         this.plataforma.desktop = this.platform.is("desktop");
         this.plataforma.android = this.platform.is("android");
         this.plataforma.cordova = this.platform.is("cordova");
-        this.storage.clear();// quitar cuando este en produccion
+        // this.storage.clear();// quitar cuando este en produccion
     }
     // ---- Database ----------------------------------------------
         async initDatabase(){
@@ -48,6 +48,7 @@ export class DataService {
             if(this.plataforma.cordova){
                 this.checkDir()
             }
+            this.database = new LocalDatabase;
             await this.storage.get('database').then(async (val) => {
                 if(val){
                     let datax = val;
@@ -58,20 +59,25 @@ export class DataService {
                         // console.log(r)
                         este.database = r
                         console.log('Si hay data',este.database);
-                        este.databaseEvents('Productos')
+                        este.databaseEvents('Bodegas')
                         // return true
                     })
                 }else{
                     console.log('No hay datos almacenados');
-                    este.decargaDatabase().then(()=>{
-                        este.databaseEvents('Productos')
+                    this.decargaDatabase('bodegas').then(()=>{
+                        este.decargaDatabase('productos').then(()=>{
+                            este.storage.set('database', JSON.stringify(este.database)).then(()=>{
+                                console.log('Database:',este.database)
+                                return
+                            })
+                        });
                     })
                     // return false
                 }
                 return
             });
         }
-        async decargaDatabase(){
+        async decargaDatabase(child: string){
             let este = this;
             const loading = await this.loadingController.create({
                 spinner:"dots",//"lines",//"circles",//"bubbles",
@@ -79,23 +85,30 @@ export class DataService {
                 cssClass: 'backRed'
             });
             await loading.present();
-            this.database = new LocalDatabase;
-            await firebase.database().ref('productos').once('value', function(productos){
-                este.database.Productos = {}
-                productos.forEach(producto=>{
-                    const modelo = new Producto();
-                    este.database.Productos[producto.key] = este.iteraModelo(modelo, producto.val());
-                    este.download(este.database.Productos[producto.key]).then(r=>{
+            let modelo
+            let campo = this.capitalize(child)
+            await firebase.database().ref(child).once('value', function(snapshots){
+                este.database[campo] = {}
+                snapshots.forEach(snapshot=>{
+                    switch (child) {
+                        case 'productos':
+                            modelo = new Producto();
+                            break;
+                        case 'bodegas':
+                            modelo = new Bodega();
+                            break;
+                        default:
+                            break;
+                    }
+                    este.database[campo][snapshot.key] = este.iteraModelo(modelo, snapshot.val());
+                    este.download(este.database[campo][snapshot.key]).then(r=>{
                         // console.log(r)
-                        este.database.Productos[producto.key].imagen = r
+                        este.database[campo][snapshot.key].imagen = r
                     })
                 })
             }).then(()=>{
-                este.storage.set('database', JSON.stringify(este.database)).then(()=>{
-                    console.log('Database:',este.database)
-                    loading.dismiss();
-                    return
-                })
+                este.databaseEvents(campo);
+                loading.dismiss()
             });
         }
         get Database(){
@@ -104,7 +117,7 @@ export class DataService {
         iteraModelo(modelo: any, data: any) {
             // console.log(modelo,data)
             Object.keys(modelo).forEach(i => {
-                // console.log('campo',data[i],modelo[i])
+                // console.log('campo',i)
                 if (typeof data[i] !== 'undefined') {
                     modelo[i] = data[i];
                 }
@@ -113,13 +126,23 @@ export class DataService {
         }
         async cargaModelos(data){
             let este = this
-            este.database = new LocalDatabase
             // console.log('Your data is', este.database);
-            este.database.Productos = {}
-            Object.keys(data.Productos).forEach(key=>{
-                const modelo = new Producto;
-                este.database.Productos[key] = este.iteraModelo(modelo, data.Productos[key]);
-            })
+            if(data.Productos){
+                este.database.Productos = {}
+                Object.keys(data.Productos).forEach(key=>{
+                    const modelo = new Producto;
+                    este.database.Productos[key] = este.iteraModelo(modelo, data.Productos[key]);
+                })
+                este.databaseEvents('Productos')
+            }
+            if(data.Bodegas){
+                este.database.Bodegas = {}
+                Object.keys(data.Bodegas).forEach(key=>{
+                    const modelo = new Bodega;
+                    este.database.Bodegas[key] = este.iteraModelo(modelo, data.Bodegas[key]);
+                })
+                este.databaseEvents('Bodegas')
+            }
             return este.database
         }
         databaseEvents(campo:string){
@@ -139,7 +162,9 @@ export class DataService {
                     case 'Productos':
                         este.ProductoObserver.next(este.database);
                         break;
-                
+                    case 'Bodegas':
+                        este.BodegaObserver.next(este.database);
+                        break
                     default:
                         break;
                 }
@@ -147,7 +172,7 @@ export class DataService {
         }
         eventos(data:any,key,tipo:String,campo:string){
             let este = this;
-            console.log('Evento',tipo,campo,este.database[campo][key])
+            console.log('Evento',tipo,campo,key,este.database[campo])
             let modelo
             let observer
             switch (campo) {
@@ -155,13 +180,18 @@ export class DataService {
                     modelo = new Producto();
                     observer = este.ProductoObserver;
                     break;
-            
+                case 'Bodegas':
+                    modelo = new Bodega();
+                    observer = este.BodegaObserver
+                    break
                 default:
                     break;
             }
             este.database[campo][key] = este.iteraModelo(modelo,data);
-            este.storage.set('database', JSON.stringify(este.database));
-            observer.next(este.database);
+            console.log('Datbase a guardar',este.database)
+            este.storage.set('database', JSON.stringify(este.database)).then(()=>{
+                observer.next(este.database);
+            })
         }
     // ---- Imagenes ----------------------------------------------
         public async download(producto:any){//(i:any,index:any,item:any) {
@@ -218,8 +248,8 @@ export class DataService {
                 })			
             );
         }
-    // ---- Productos ---------------------------------------------
-        async creaProducto(formulario:any,src:any,accion:string,ProductoPushID:string) {
+    // ---- Productos | Bodegas -----------------------------------
+        async creaChild(formulario:any,imagen:any,accion:string,PushID:string,child:string) {
             let este = this
             const loading = await this.loadingController.create({
                 // message: 'Trabajando...',
@@ -228,66 +258,44 @@ export class DataService {
                 cssClass: 'backRed'
             });
             await loading.present();
-            let url = src
-            if(accion == 'crear' || (src instanceof File) || (src instanceof Blob)){
-                if(!ProductoPushID){ ProductoPushID = firebase.database().ref().push().key }
-                await this.uploadImagen(formulario,src,ProductoPushID).then( u=>{
+            if(accion == 'crear' || (imagen instanceof File) || (imagen instanceof Blob)){
+                if(!PushID){ PushID = firebase.database().ref().push().key }
+                await this.uploadImagen(formulario,imagen,PushID,child).then( u=>{
                     loading.dismiss();
-                    este.presentToastWithOptions('Producto creado correctamente',3000,'top')
+                    este.presentToastWithOptions('Termino correctamente',3000,'top')
                     return
                 })
             }else{
-                // console.log('Producto a ser guardado 1',formulario, ProductoPushID, url)
-                await este.actualizaProducto(formulario, ProductoPushID, url).then(()=>{
+                // console.log('Producto a ser guardado 1',formulario, PushID, imagen)
+                await este.actualizaChild(formulario, PushID, imagen, child).then(()=>{
                     // ---- Guardo localmente ----------------------
                         este.storage.set('database', JSON.stringify(este.database)).then(()=>{
                             loading.dismiss();
-                            este.presentToastWithOptions('Producto creado correctamente',3000,'top')
+                            este.presentToastWithOptions('Termino correctamente',3000,'top')
                         });
                     // ---------------------------------------------
                 })
             }
         }
-        async actualizaProducto(formulario: any, ProductoPushID: string, url: any){
-            let este = this
-            let producto = new Producto
-            // ---- Actualizo la data local antes de escribirlo --------
-                producto.key = ProductoPushID
-                producto.imagen = url;
-                producto.disponibilidad = formulario.disponibilidad;
-                producto.descripcion = formulario.descripcion;
-                producto.precio = formulario.precio;
-                producto.creacion = new Date();
-                producto.nombre = formulario.nombre;
-                producto.largo = formulario.largo;
-                producto.ancho = formulario.ancho;
-                producto.alto = formulario.alto;
-                producto.descuento = formulario.descuento;
-                producto.cantidad = formulario.cantidad;
-
-                este.database.Productos[producto.key] = producto;                            
-                // console.log('ojo entro!',producto);
-            // ---- Actualizacion de los datos -------------
-                await firebase.database().ref('productos')
-                .child(producto.key).update(producto);
-            // ---------------------------------------------
-        }
-        async uploadImagen(formulario:any,src:any,ProductoPushID:string){
+        async uploadImagen(formulario:any,imagen:any,PushID:string,child:string){
             let este = this
             try{
-                let nombre = formulario.nombre+'.'+src['type'].substr("image/".length);
-                // console.log('imagen',nombre,src)
-                const imagenes = firebase.storage().ref('productos').child(nombre)
+                let nombre = formulario.nombre+'.'+imagen['type'].substr("image/".length);
+                console.log('imagen',nombre,imagen)
+                const imagenes = firebase.storage().ref(child).child(nombre)
                 const metadata = {
-                    contentType: src['type']
+                    contentType: imagen['type']
                 };
-                await imagenes.put(src,metadata).then(async function(snapshot) {
+                await imagenes.put(imagen,metadata).then(async function(snapshot) {
                     await imagenes.getDownloadURL().then(async function(url) {
                         // hago copia de respaldo por modificación
-                        // console.log('Producto a ser guardado 0',formulario, ProductoPushID, url)
-                        await este.actualizaProducto(formulario, ProductoPushID, url).then(()=>{
+                        console.log('Producto a ser guardado 0',child,formulario, PushID, url)
+                        await este.actualizaChild(formulario, PushID, url, child).then(()=>{
                             // ---- Guardo localmente ----------------------
-                            return este.storage.set('database', JSON.stringify(este.database))
+                            console.log('db',este.database)
+                            este.storage.set('database', JSON.stringify(este.database)).then(()=>{
+                                return true
+                            })
                             // ---------------------------------------------
                         })
                     }).catch(function(error) {
@@ -323,6 +331,58 @@ export class DataService {
                 console.error(error);
             }
         }
+        async actualizaChild(formulario: any, PushID: string, imagen: any, child: string){
+            let este = this
+            let modelo
+            let observer
+            let data
+            const campo = this.capitalize(child)
+            switch (child) {
+                case 'productos':
+                    modelo = new Producto();
+                    observer = este.ProductoObserver;
+                    if(este.database.Productos){
+                        data = este.database.Productos
+                    }else{
+                        este.database.Productos = {}
+                        data = este.database.Productos
+                    }
+                    break;
+                case 'bodegas':
+                    modelo = new Bodega();
+                    observer = este.BodegaObserver;
+                    // data = este.database.Bodegas
+                    if(este.database.Bodegas){
+                        data = este.database.Bodegas
+                    }else{
+                        este.database.Bodegas = {}
+                        data = este.database.Bodegas
+                    }
+                    break;
+            
+                default:
+                    break;
+            }
+            if(!imagen){
+                imagen = data[PushID].imagen
+            }
+            // ---- Actualizo la data local antes de escribirlo --------
+                console.log('actualiza',campo,formulario,PushID,imagen,modelo,data)
+                data[PushID] = este.iteraModelo(modelo, formulario);
+                data[PushID].key = PushID
+                data[PushID].imagen = imagen;
+                data[PushID].creacion = new Date();
+
+                este.database[campo][PushID] = data[PushID];
+                console.log('ojo entro!',data[PushID]);
+            // ---- Actualizacion de los datos -------------
+                await firebase.database().ref(child)
+                .child(PushID).update(data[PushID]).catch(error=>{
+                    este.presentAlert('Error',error)
+                    console.error(error);
+                })
+            // ---------------------------------------------
+        }
     // ---- Generales ---------------------------------------------
         IsJsonString(str) {
             try {
@@ -331,6 +391,10 @@ export class DataService {
                 return false;
             }
             return true;
+        }
+        capitalize(s){
+            if (typeof s !== 'string') return ''
+            return s.charAt(0).toUpperCase() + s.slice(1)
         }
         async presentAlert(titulo,mensaje) {
             const alert = await this.alertController.create({

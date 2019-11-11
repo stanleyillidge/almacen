@@ -13,6 +13,7 @@
     }
     export class Bodega {
         public key: string // PushID de la bodega
+            public creacion: Date
             public nombre: string
             public codigo: string // ID unico para identificar la bodega
             public cantidad: number // numero total de productos, se calcula con base al inventario
@@ -22,6 +23,9 @@
             public ancho: number // ancho en metros[m] de la bodega
             public alto: number // alto en metros[m] de la bodega
         constructor() {
+            if(!this.creacion){
+                this.creacion = new Date()
+            }
             if (!this.imagen) {
                 this.imagen = "/assets/shapes.svg";
             }
@@ -39,6 +43,15 @@
             }
             if (!this.key) {
                 this.key = "";
+            }
+            if(!this.largo){
+                this.largo = 0
+            }
+            if(!this.ancho){
+                this.ancho = 0
+            }
+            if(!this.alto){
+                this.alto = 0
             }
         }
         get Capacidad(){

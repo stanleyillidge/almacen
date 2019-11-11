@@ -1,0 +1,33 @@
+<ion-header no-border>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-icon class="buscar-top" name="search"></ion-icon>
+    </ion-buttons>
+    <ion-title>Bodegas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [ngClass]="{ 'blur' : toggle }" class="ion-padding" no-border>
+  <ion-row wrap>
+    <ion-col *ngFor="let d of data">
+      <ion-item (click)="page(d,'editar')">
+        <ion-thumbnail class="imagen" slot="start">
+          <ion-img src="{{d.imagen}}"></ion-img>
+        </ion-thumbnail>
+        <ion-label>
+          <h2>{{d.nombre}}</h2>
+          <h3 class="data">{{d.Capacidad}} mt3</h3>
+        </ion-label>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+</ion-content>
+<ion-button class="almacen-button derecho">
+  <ion-icon name="barcode"></ion-icon>
+</ion-button>
+<ion-button class="almacen-button izquierdo" (click)="page('','crear')">
+  <ion-icon name="add-circle"></ion-icon>
+</ion-button>

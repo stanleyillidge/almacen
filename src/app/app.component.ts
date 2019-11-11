@@ -16,6 +16,11 @@ export class AppComponent {
     {
       title: 'Dashboard',
       url: 'tabs/Dashboard',
+      icon: 'pie'
+    },
+    {
+      title: 'Bodegas',
+      url: 'bodegas',
       icon: 'business'
     },
     {

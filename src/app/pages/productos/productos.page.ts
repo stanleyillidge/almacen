@@ -20,7 +20,7 @@ export class ProductosPage implements OnInit {
     let este = this;
     this.toggle = false;
     this.ds.ProductoObserver.subscribe((newData) => {
-      // console.log('Se actualizaron las sedes',newData);
+      console.log('Se actualizo un producto',newData);
       this.database = newData;
       este.data = [];
       Object.keys(this.database.Productos).map(function(i){
@@ -42,12 +42,5 @@ export class ProductosPage implements OnInit {
       este.data.push(este.database.Productos[i]);
     });
     console.log('ngOnInit',this.database)
-    /* for(let i = 1;i<40;i++){
-      this.data.push({
-        nombre: 'Cerveza corona 355ml '+i,
-        tipo: 'Cerveza',
-        precio: '$'+(100000*i)
-      })
-    } */
   }
 }

@@ -1,0 +1,55 @@
+<ion-header no-border>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-icon class="buscar-top" name="search"></ion-icon>
+    </ion-buttons>
+    <ion-title>Crear Bodega</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" no-border>
+  <form [formGroup]="newBodegaForm" padding-right>
+    <ion-img *ngIf="ds.plataforma.cordova" (click)="camara()" [src]="newBodegaForm.value.imagen"></ion-img>
+    <label *ngIf="ds.plataforma.desktop">
+      <input type="file" style="display: none;" class="button" (change)="onFile($event)">
+      <img class="user-image" src="{{newBodegaForm.value.imagen}}">
+    </label>
+    <ion-item>
+      <ion-label>Nombre</ion-label>
+      <ion-input type="text" formControlName="nombre"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Descripcion</ion-label>
+      <ion-input type="text" formControlName="descripcion"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Largo</ion-label>
+      <ion-input type="Number" formControlName="largo"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Ancho</ion-label>
+      <ion-input type="Number" formControlName="ancho"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Alto</ion-label>
+      <ion-input type="Number" formControlName="alto"></ion-input>
+    </ion-item>
+    
+  </form>
+</ion-content>
+
+<ion-button
+class="almacen-button izquierdo"
+(click)="navCtrl.pop()">
+  <ion-icon name="remove-circle"></ion-icon>
+</ion-button>
+
+<ion-button
+class="almacen-button derecho"
+[disabled]="!newBodegaForm.valid"
+(click)="creaBodega()">
+  <ion-icon name="add-circle"></ion-icon>
+</ion-button>

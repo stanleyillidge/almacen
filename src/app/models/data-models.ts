@@ -64,7 +64,7 @@
             public creacion: Date
             public estado: 'pagado' | 'pendiente' | 'anulado'
             public numProductos: number // Numero total de productos relacionados en el documento
-            public vendedor: string // PushID del vendedor
+            public proveedor: string // PushID del proveedor
             public comprador: string // PushID del comprador al que va dirigida
             public usuario: string // PushID del empleado que realiza el documento
             public ListaDetallada: string // PushID de la lista detallada de productos relacionados en el documento
@@ -174,9 +174,47 @@
             public usuario: string // PushID del empleado que realiza el documento // campo heredado del documento
             public documento: string // PushID del documento
         constructor() {
-            // condiciones iniciales
-            if (!this.vencimiento && (this.tipo =='consumible' || this.tipo == 'producto')) {
-                // this.vencimiento = 0;
+            if(!this.bodega){
+                this.bodega = ''
+            }
+            if(!this.ingreso){
+                this.ingreso = new Date();
+            }
+            if(!this.salida){
+                this.salida = null
+            }
+            if(!this.traslado){
+                this.traslado = null
+            }
+            if(!this.producto){
+                this.producto = ''
+            }
+            if(!this.vencimiento){
+                this.vencimiento = new Date();
+            }
+            if(!this.tipo){
+                this.tipo = 'producto'
+            }
+            if(!this.cantidad){
+                this.cantidad = 0
+            }
+            if(!this.precio){
+                this.precio = 0
+            }
+            if(!this.costo){
+                this.costo = 0
+            }
+            if(!this.serie){
+                this.serie = ''
+            }
+            if(!this.vendedor){
+                this.vendedor = ''
+            }
+            if(!this.usuario){
+                this.usuario = ''
+            }
+            if(!this.documento){
+                this.documento = ''
             }
         }
     }

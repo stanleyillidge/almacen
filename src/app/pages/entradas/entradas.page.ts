@@ -10,6 +10,20 @@ export class EntradasPage implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    // bodega
+    // ingreso
+    // salida
+    // traslado
+    // producto
+    // vencimiento
+    // tipo
+    // cantidad
+    // precio
+    // costo
+    // serie
+    // vendedor
+    // usuario
+    // documento
   }
 
 }

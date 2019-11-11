@@ -2,7 +2,7 @@ import { Injectable, NgZone } from '@angular/core';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
-import 'firebase/functions';
+// import 'firebase/functions';
 import 'firebase/storage';
 import { Router } from "@angular/router";
 import { LoadingController, AlertController, Platform, ToastController } from '@ionic/angular';
@@ -12,13 +12,13 @@ import { ReplaySubject } from 'rxjs';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
-import { LocalDatabase, Producto, Bodega } from './data-models'; // hola stanley - jaider
+import { LocalDatabase, Producto, Bodega, Inventario } from './data-models'; // hola stanley - jaider
 
 @Injectable()
 export class DataService {
     public ProductoObserver: ReplaySubject<any> = new ReplaySubject<any>();
     public BodegaObserver: ReplaySubject<any> = new ReplaySubject<any>();
-    // public SubUbicacionesObserver: ReplaySubject<any> = new ReplaySubject<any>();
+    public InventarioObserver: ReplaySubject<any> = new ReplaySubject<any>();
     // public productoBaseObserver: ReplaySubject<any> = new ReplaySubject<any>();
     // public productosObserver: ReplaySubject<any> = new ReplaySubject<any>();
     database: LocalDatabase;
@@ -183,6 +183,10 @@ export class DataService {
                 case 'Bodegas':
                     modelo = new Bodega();
                     observer = este.BodegaObserver
+                    break;
+                case 'Inventario':
+                    modelo = new Inventario();
+                    observer = este.InventarioObserver
                     break
                 default:
                     break;

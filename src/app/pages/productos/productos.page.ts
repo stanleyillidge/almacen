@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController, AlertController } from '@ionic/angular';
-import { DataService } from '../models/data-service';
-import { LocalDatabase } from '../models/data-models';
+import { LocalDatabase } from 'src/app/models/data-models';
+import { DataService } from 'src/app/models/data-service';
 
 @Component({
   selector: 'app-productos',

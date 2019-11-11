@@ -19,8 +19,8 @@ export class DataService {
     public ProductoObserver: ReplaySubject<any> = new ReplaySubject<any>();
     // public UbicacionesObserver: ReplaySubject<any> = new ReplaySubject<any>();
     // public SubUbicacionesObserver: ReplaySubject<any> = new ReplaySubject<any>();
-    // public ArticuloBaseObserver: ReplaySubject<any> = new ReplaySubject<any>();
-    // public ArticulosObserver: ReplaySubject<any> = new ReplaySubject<any>();
+    // public productoBaseObserver: ReplaySubject<any> = new ReplaySubject<any>();
+    // public productosObserver: ReplaySubject<any> = new ReplaySubject<any>();
     database: LocalDatabase;
     plataforma: any = {desktop:Boolean,android:Boolean};
     looper:number = 0;
@@ -40,14 +40,14 @@ export class DataService {
         this.plataforma.desktop = this.platform.is("desktop");
         this.plataforma.android = this.platform.is("android");
         this.plataforma.cordova = this.platform.is("cordova");
-        // this.storage.clear();// quitar cuando este en produccion
+        this.storage.clear();// quitar cuando este en produccion
     }
     // ---- Database ----------------------------------------------
         async initDatabase(){
             let este = this
-            /* if(this.plataforma.cordova){
+            if(this.plataforma.cordova){
                 this.checkDir()
-            } */
+            }
             await this.storage.get('database').then(async (val) => {
                 if(val){
                     let datax = val;
@@ -58,14 +58,16 @@ export class DataService {
                         // console.log(r)
                         este.database = r
                         console.log('Si hay data',este.database);
+                        este.databaseEvents('Productos')
                         // return true
                     })
                 }else{
                     console.log('No hay datos almacenados');
-                    este.decargaDatabase()
+                    este.decargaDatabase().then(()=>{
+                        este.databaseEvents('Productos')
+                    })
                     // return false
                 }
-                this.databaseEvents('Productos')
                 return
             });
         }
@@ -78,16 +80,21 @@ export class DataService {
             });
             await loading.present();
             this.database = new LocalDatabase;
-            firebase.database().ref('productos').once('value', function(productos){
+            await firebase.database().ref('productos').once('value', function(productos){
                 este.database.Productos = {}
                 productos.forEach(producto=>{
                     const modelo = new Producto();
                     este.database.Productos[producto.key] = este.iteraModelo(modelo, producto.val());
+                    este.download(este.database.Productos[producto.key]).then(r=>{
+                        // console.log(r)
+                        este.database.Productos[producto.key].imagen = r
+                    })
                 })
             }).then(()=>{
                 este.storage.set('database', JSON.stringify(este.database)).then(()=>{
                     console.log('Database:',este.database)
                     loading.dismiss();
+                    return
                 })
             });
         }
@@ -155,6 +162,61 @@ export class DataService {
             este.database[campo][key] = este.iteraModelo(modelo,data);
             este.storage.set('database', JSON.stringify(este.database));
             observer.next(este.database);
+        }
+    // ---- Imagenes ----------------------------------------------
+        public async download(producto:any){//(i:any,index:any,item:any) {
+            let este = this;
+            // console.log(c + name + '.png',producto)
+            if (this.plataforma.cordova && this.plataforma.android) {
+                return await this.downloadFile(producto)
+            }else{
+                return producto.imagen
+            }
+        }
+        public async checkFileExists(producto:any){
+            let este = this;
+            let name = producto.key;
+            await this.file.checkFile(this.file.externalRootDirectory, 'inventarios/' + name + '.png')
+            .then(_ => {
+                // alert("A file with the same name already exists!");
+                console.log("A file with the same name already exists!");
+                return true
+            })
+            // File does not exist yet, we can save normally
+            .catch(err =>{
+                return false
+            })
+        }
+        public async downloadFile(producto:any){
+            const fileTransfer: FileTransferObject = this.fileTransfer.create();
+            let este = this;
+            let name = producto.key;
+            let file = producto.imagen;
+            let c = 'inventarios/';
+            return await fileTransfer.download(file, este.file.externalRootDirectory + '/'+ c + name + '.png')
+            .then((entry) => {
+                return este.webview.convertFileSrc(entry.nativeURL);
+            })
+            .catch((err) =>{
+                console.log(producto.key,'Error saving file: ' + err.message);
+                return producto.imagen
+            })
+        }
+        async checkDir(){
+            let este = this;
+            return await this.file.checkDir(this.file.externalRootDirectory, 'inventarios').then(()=>{
+                console.log('El directorio si existe')
+            }).catch(
+                // Directory does not exists, create a new one
+                err => este.file.createDir(este.file.externalRootDirectory, 'inventarios', false)
+                .then(response => {
+                    // alert('New folder created:  ' + response.fullPath);
+                    console.log('New folder created:  ' + response.fullPath);
+                }).catch(err => {
+                    // alert('It was not possible to create the dir "inventarios". Err: ' + err.message);
+                    console.log('It was not possible to create the dir "inventarios". Err: ' + err.message);
+                })			
+            );
         }
     // ---- Productos ---------------------------------------------
         async creaProducto(formulario:any,src:any,accion:string,ProductoPushID:string) {

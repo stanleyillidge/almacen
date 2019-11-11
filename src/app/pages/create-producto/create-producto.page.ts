@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { DataService } from '../models/data-service';
 import { File } from '@ionic-native/file/ngx';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { ImageResizer, ImageResizerOptions } from '@ionic-native/image-resizer/ngx';
-import { Producto } from '../models/data-models';
+import { DataService } from 'src/app/models/data-service';
+import { Producto } from 'src/app/models/data-models';
+
 
 @Component({
   selector: 'app-create-producto',

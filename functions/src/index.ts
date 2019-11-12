@@ -29,12 +29,12 @@ const gcs = new Storage();
 // const Gdocs = google.docs({version: 'v1',auth:  jwtClient});
 // const drive = google.drive({version:'v3',auth: jwtClient});
 
-// // Start writing Firebase Functions
-// // https://firebase.google.com/docs/functions/typescript
-//
-// export const helloWorld = functions.https.onRequest((request, response) => {
-//  response.send("Hello from Firebase!");
-// });
+// // // Start writing Firebase Functions
+// // // https://firebase.google.com/docs/functions/typescript
+// 
+// // export const helloWorld = functions.https.onRequest((request, response) => {
+// //  response.send("Hello from Firebase!");
+// // });
 
 // --- Crear Usuarios Email/Pass ---------------------------------------------------
     exports.creaUsuarios = functions.https.onCall((data, context) => {
@@ -48,27 +48,27 @@ const gcs = new Storage();
         }).then((userRecord)=> {
             // See the UserRecord reference doc for the contents of userRecord.
             console.log("Successfully created new user:", userRecord.uid);
-            let claims = {super:false, admin: false, empleado:false, usuario:true}
-            switch (data.rol) {
-                case 'super':
-                    claims = {super:true, admin: true, empleado:false, usuario:false}
+            data.uid = userRecord.uid;
+            return actualizaUsuario(data)
+            /* let claims = {proveedor: false, admin: false, empleado: false, cliente: true}
+            switch (data.rol) { //'admin' | 'empleado' | 'proveedor' | 'cliente'
+                case 'proveedor':
+                    claims = {proveedor: true, admin: true, empleado: false, cliente: false}
                     break;
                 case 'admin':
-                    claims = {super:false, admin: true, empleado:false, usuario:false}
+                    claims = {proveedor: false, admin: true, empleado: false, cliente: false}
                     break;
                 case 'empleado':
-                    claims = {super:false, admin: false, empleado:true, usuario:false}
+                    claims = {proveedor: false, admin: false, empleado: true, cliente: false}
                     break;
-                case 'usuario':
-                    claims = {super:false, admin: false, empleado:false, usuario:true}
+                case 'cliente':
+                    claims = {proveedor: false, admin: false, empleado: false, cliente: true}
                     break;
             }
             return admin.auth().setCustomUserClaims(userRecord.uid, claims ).then(() => {
                 console.log("Successfully created Claims to new user:",data, userRecord);
-
-                ref.child(data.rol + '/' + userRecord.uid).set({
+                ref.child('usuarios' + '/' + userRecord.uid).set({
                     email: userRecord.email,
-                    emailVerified: userRecord.emailVerified,
                     rol: data.rol,
                     nombre: data.nombre,
                     telefono: data.telefono,
@@ -83,7 +83,7 @@ const gcs = new Storage();
                 console.error("Error creando los claims:", error);
                 throw new functions.https.HttpsError(error.code, error);
                 // return error;
-            });
+            }); */
         }).catch((error)=> {
             console.error("Error creating new user:", error);
             // return error;
@@ -120,29 +120,27 @@ const gcs = new Storage();
     });
     function actualizaUsuario(data:any){
         console.log("Updated user:", data);
-        let claims = {super:false, admin: false, empleado:false, usuario:true}
-        switch (data.rol) {
-            case 'super':
-                claims = {super:true, admin: true, empleado:false, usuario:false}
-                data.zona = 'todas'
-                break;
-            case 'admin':
-                claims = {super:false, admin: true, empleado:false, usuario:false}
-                break;
-            case 'empleado':
-                claims = {super:false, admin: false, empleado:true, usuario:false}
-                break;
-            case 'usuario':
-                claims = {super:false, admin: false, empleado:false, usuario:true}
-                break;
-        }
-        return admin.auth().setCustomUserClaims(data.uid, claims ).then(() => {
-            // The new custom claims will propagate to the user's ID token the
-            // next time a new one is issued.
+        let claims = {proveedor: false, admin: false, empleado: false, cliente: true}
+            switch (data.rol) { //'admin' | 'empleado' | 'proveedor' | 'cliente'
+                case 'proveedor':
+                    claims = {proveedor: true, admin: true, empleado: false, cliente: false}
+                    break;
+                case 'admin':
+                    claims = {proveedor: false, admin: true, empleado: false, cliente: false}
+                    break;
+                case 'empleado':
+                    claims = {proveedor: false, admin: false, empleado: true, cliente: false}
+                    break;
+                case 'cliente':
+                    claims = {proveedor: false, admin: false, empleado: false, cliente: true}
+                    break;
+            }
+            return admin.auth().setCustomUserClaims(data.uid, claims ).then(() => {
             console.log("Successfully updated Claims to user:",data);
-            ref.child(data.rol + '/' + data.uid).update({
-                email: data.email,
+            ref.child('usuarios' + '/' + data.uid).update({
                 rol: data.rol,
+                key: data.uid,
+                email: data.email,
                 nombre: data.nombre,
                 telefono: data.telefono,
                 cedula: data.cedula,
@@ -150,9 +148,7 @@ const gcs = new Storage();
                 direccion: data.direccion
             }).then(()=>{console.log('ok')}).catch((error)=>{console.log('error',error)})
             
-            return {
-                result:`Successfully updated user: ${data}`
-            }
+            return data.uid
         }).catch(function (error) {
             // console.log("Error creating new user:", error);
             // return error;

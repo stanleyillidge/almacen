@@ -1,15 +1,47 @@
-// ---- Basicos ----------------- jgfjgkgkgkg
+// ---- Basicos -----------------
     export class Usuario{ // en la Base de datos guardar por rol como key principal
         public key: string // UID generado desde el Auth
             public rol: 'admin' | 'empleado' | 'proveedor' | 'cliente'
+            public creacion: Date
             public nombre: string
-            public cedula: number
-            public telefono: []
+            public cedula: string
+            public telefono: number
             public direccion: string
             public barrio: string
             public email: string
             public token: string // token de autorización para enviar y recibir Push Notifications
-        constructor(){}
+        constructor(){
+            if(!this.key){
+                this.key = ''
+            }
+            if(!this.rol){
+                this.rol = 'empleado'
+            }
+            if(!this.creacion){
+                this.creacion = new Date()
+            }
+            if(!this.nombre){
+                this.nombre = ''
+            }
+            if(!this.cedula){
+                this.cedula = ''
+            }
+            if(!this.telefono){
+                this.telefono = 0
+            }
+            if(!this.direccion){
+                this.direccion = ''
+            }
+            if(!this.barrio){
+                this.barrio = ''
+            }
+            if(!this.email){
+                this.email = ''
+            }
+            if(!this.token){
+                this.token = ''
+            }
+        }
     }
     export class Bodega {
         public key: string // PushID de la bodega
@@ -220,6 +252,7 @@
     }
 // ---- Data Base ---------------
     export class LocalDatabase {
+        public Usuarios: { [key: string]: Usuario };
         public Bodegas: { [key: string]: Bodega };
         public Documentos: { [key: string]: Documento };
         public ListaDetalladas: { [key: string]: ListaDetallada };

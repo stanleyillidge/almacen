@@ -11,7 +11,17 @@
 </ion-header>
 
 <ion-content [ngClass]="{ 'blur' : toggle }" no-border>
-
+  <ion-row wrap>
+    <ion-col *ngFor="let d of usuarios">
+      <ion-item (click)="page(d,'editar')">
+        <ion-label>
+          <h2>{{d.nombre}} - {{d.rol}}</h2>
+          <!-- <h3 class="data">{{d.rol}}</h3> -->
+          <p>{{d.telefono}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-col>
+  </ion-row>
 </ion-content>
 <ion-button class="almacen-button derecho">
   <ion-icon name="barcode"></ion-icon>

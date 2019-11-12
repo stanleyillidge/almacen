@@ -12,14 +12,15 @@ import { ReplaySubject } from 'rxjs';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
-import { LocalDatabase, Producto, Bodega, Inventario } from '../models/data-models';
+import { LocalDatabase, Producto, Bodega, Inventario, Usuario } from '../models/data-models';
+import { dismiss } from '@ionic/core/dist/types/utils/overlays';
 
 @Injectable()
 export class DataService {
     public ProductoObserver: ReplaySubject<any> = new ReplaySubject<any>();
     public BodegaObserver: ReplaySubject<any> = new ReplaySubject<any>();
     public InventarioObserver: ReplaySubject<any> = new ReplaySubject<any>();
-    // public productoBaseObserver: ReplaySubject<any> = new ReplaySubject<any>();
+    public UsuariosObserver: ReplaySubject<any> = new ReplaySubject<any>();
     // public productosObserver: ReplaySubject<any> = new ReplaySubject<any>();
     database: LocalDatabase;
     plataforma: any = {desktop:Boolean,android:Boolean};
@@ -66,10 +67,12 @@ export class DataService {
                     console.log('No hay datos almacenados');
                     this.decargaDatabase('bodegas').then(()=>{
                         este.decargaDatabase('productos').then(()=>{
-                            este.storage.set('database', JSON.stringify(este.database)).then(()=>{
-                                console.log('Database:',este.database)
-                                return
-                            })
+                            este.decargaDatabase('usuarios').then(()=>{
+                                este.storage.set('database', JSON.stringify(este.database)).then(()=>{
+                                    console.log('Database:',este.database)
+                                    return
+                                })
+                            });
                         });
                     })
                     // return false
@@ -97,14 +100,19 @@ export class DataService {
                         case 'bodegas':
                             modelo = new Bodega();
                             break;
+                        case 'usuarios':
+                            modelo = new Usuario();
+                            break;
                         default:
                             break;
                     }
                     este.database[campo][snapshot.key] = este.iteraModelo(modelo, snapshot.val());
-                    este.download(este.database[campo][snapshot.key]).then(r=>{
-                        // console.log(r)
-                        este.database[campo][snapshot.key].imagen = r
-                    })
+                    if(child != 'usuarios'){
+                        este.download(este.database[campo][snapshot.key]).then(r=>{
+                            // console.log(r)
+                            este.database[campo][snapshot.key].imagen = r
+                        })
+                    }
                 })
             }).then(()=>{
                 este.databaseEvents(campo);
@@ -143,6 +151,14 @@ export class DataService {
                 })
                 este.databaseEvents('Bodegas')
             }
+            if(data.Usuarios){
+                este.database.Usuarios = {}
+                Object.keys(data.Usuarios).forEach(key=>{
+                    const modelo = new Usuario;
+                    este.database.Usuarios[key] = este.iteraModelo(modelo, data.Usuarios[key]);
+                })
+                este.databaseEvents('Usuarios')
+            }
             return este.database
         }
         databaseEvents(campo:string){
@@ -164,6 +180,9 @@ export class DataService {
                         break;
                     case 'Bodegas':
                         este.BodegaObserver.next(este.database);
+                        break
+                    case 'Usuarios':
+                        este.UsuariosObserver.next(este.database);
                         break
                     default:
                         break;
@@ -187,6 +206,10 @@ export class DataService {
                 case 'Inventario':
                     modelo = new Inventario();
                     observer = este.InventarioObserver
+                    break
+                case 'Usuarios':
+                    modelo = new Usuario();
+                    observer = este.UsuariosObserver
                     break
                 default:
                     break;
@@ -252,7 +275,7 @@ export class DataService {
                 })			
             );
         }
-    // ---- Productos | Bodegas -----------------------------------
+    // ---- Productos | Bodegas | Usuarios ------------------------
         async creaChild(formulario:any,imagen:any,accion:string,PushID:string,child:string) {
             let este = this
             const loading = await this.loadingController.create({
@@ -266,7 +289,6 @@ export class DataService {
                 if(!PushID){ PushID = firebase.database().ref().push().key }
                 await this.uploadImagen(formulario,imagen,PushID,child).then( u=>{
                     loading.dismiss();
-                    este.presentToastWithOptions('Termino correctamente',3000,'top')
                     return
                 })
             }else{
@@ -292,7 +314,6 @@ export class DataService {
                 };
                 await imagenes.put(imagen,metadata).then(async function(snapshot) {
                     await imagenes.getDownloadURL().then(async function(url) {
-                        // hago copia de respaldo por modificación
                         console.log('Producto a ser guardado 0',child,formulario, PushID, url)
                         await este.actualizaChild(formulario, PushID, url, child).then(()=>{
                             // ---- Guardo localmente ----------------------
@@ -333,6 +354,7 @@ export class DataService {
             catch(error) {
                 this.presentAlert('Error',error)
                 console.error(error);
+                return
             }
         }
         async actualizaChild(formulario: any, PushID: string, imagen: any, child: string){
@@ -363,7 +385,7 @@ export class DataService {
                         data = este.database.Bodegas
                     }
                     break;
-            
+                
                 default:
                     break;
             }
@@ -381,11 +403,56 @@ export class DataService {
                 console.log('ojo entro!',data[PushID]);
             // ---- Actualizacion de los datos -------------
                 await firebase.database().ref(child)
-                .child(PushID).update(data[PushID]).catch(error=>{
+                .child(PushID).update(data[PushID]).then(a=>{
+                    este.presentToastWithOptions('Termino correctamente',3000,'top')
+                    return
+                }).catch(error=>{
                     este.presentAlert('Error',error)
                     console.error(error);
+                    return
                 })
             // ---------------------------------------------
+        }
+        async CloudFunctionUsuarios(usuario,accion){
+            let este = this;
+            const loading = await this.loadingController.create({
+                // message: 'Trabajando...',
+                spinner:"dots",
+                translucent: true,
+                cssClass: 'backRed'
+            });
+            await loading.present();
+            let funcion = "creaUsuarios"
+            if(accion != 'crear'){
+                funcion = "actualizaUsuarios"
+            }
+            let CloudFunction = firebase.functions().httpsCallable(funcion);
+            await CloudFunction(usuario).then(function(userRecord) {
+                // Read result of the Cloud Function.
+                console.log('Usuario creado: ',userRecord);
+                let modelo = new Usuario();
+                if(!este.database.Usuarios){
+                    este.database.Usuarios = {}
+                    este.databaseEvents('Usuarios')
+                }
+                if(userRecord.data){
+                    este.database.Usuarios[userRecord.data] = este.iteraModelo(modelo, usuario);
+                    este.storage.set('database', JSON.stringify(este.database)).then(()=>{
+                        este.UsuariosObserver.next(este.database);
+                        este.presentToastWithOptions('Termino correctamente',3000,'top')
+                    })
+                }
+                loading.dismiss();
+                return true
+            }).catch(function(error) {
+                // Read result of the Cloud Function.
+                loading.dismiss();
+                console.log('Usuario error: ',error);
+                let titulo = 'Error'
+                let mensaje = error.message
+                este.presentAlert(titulo,mensaje)
+                return
+            })
         }
     // ---- Generales ---------------------------------------------
         IsJsonString(str) {

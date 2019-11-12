@@ -1,9 +1,63 @@
-<ion-header>
+<ion-header no-border>
   <ion-toolbar>
-    <ion-title>create-usuarios</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-icon class="buscar-top" name="search"></ion-icon>
+    </ion-buttons>
+    <ion-title>Crear usuario</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-
+<ion-content class="ion-padding" no-border>
+  <form [formGroup]="newUsuarioForm" padding-right>
+    <ion-item>
+      <ion-label>Nombre</ion-label>
+      <ion-input type="text" formControlName="nombre"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Email</ion-label>
+      <ion-input type="text" formControlName="email"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Rol</ion-label>
+      <ion-select formControlName="rol" placeholder="Seleccionar rol">
+        <ion-select-option value="admin">admin</ion-select-option>
+        <ion-select-option value="empleado">empleado</ion-select-option>
+        <ion-select-option value="proveedor">proveedor</ion-select-option>
+        <ion-select-option value="cliente">cliente</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label>Telefono</ion-label>
+      <ion-input type="Number" formControlName="telefono"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Numero de cedula</ion-label>
+      <ion-input type="text" formControlName="cedula"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Direccion</ion-label>
+      <ion-input type="text" formControlName="direccion"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label>Barrio</ion-label>
+      <ion-input type="text" formControlName="barrio"></ion-input>
+    </ion-item>
+    
+  </form>
 </ion-content>
+
+<ion-button
+class="almacen-button izquierdo"
+(click)="navCtrl.pop()">
+  <ion-icon name="remove-circle"></ion-icon>
+</ion-button>
+
+<ion-button
+class="almacen-button derecho"
+[disabled]="!newUsuarioForm.valid"
+(click)="creaUsuario()">
+  <ion-icon name="add-circle"></ion-icon>
+</ion-button>

@@ -27,6 +27,11 @@ export class AppComponent {
       title: 'Productos',
       url: 'productos',
       icon: 'cube'
+    },
+    {
+      title: 'Usuarios',
+      url: 'usuarios',
+      icon: 'contacts'
     }
   ];
 

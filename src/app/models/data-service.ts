@@ -2,7 +2,7 @@ import { Injectable, NgZone } from '@angular/core';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
-// import 'firebase/functions';
+import 'firebase/functions';
 import 'firebase/storage';
 import { Router } from "@angular/router";
 import { LoadingController, AlertController, Platform, ToastController } from '@ionic/angular';

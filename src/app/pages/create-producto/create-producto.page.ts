@@ -5,7 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { File } from '@ionic-native/file/ngx';
 import { Camera, CameraOptions } from '@ionic-native/camera/ngx';
 import { ImageResizer, ImageResizerOptions } from '@ionic-native/image-resizer/ngx';
-import { DataService } from 'src/app/models/data-service';
+import { DataService } from 'src/app/services/data-service';
 import { Producto } from 'src/app/models/data-models';
 
 

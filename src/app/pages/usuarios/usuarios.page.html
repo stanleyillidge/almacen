@@ -1,9 +1,21 @@
-<ion-header>
+<ion-header no-border>
   <ion-toolbar>
-    <ion-title>usuarios</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-icon class="buscar-top" name="search"></ion-icon>
+    </ion-buttons>
+    <ion-title>Usuarios</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [ngClass]="{ 'blur' : toggle }" no-border>
 
 </ion-content>
+<ion-button class="almacen-button derecho">
+  <ion-icon name="barcode"></ion-icon>
+</ion-button>
+<ion-button class="almacen-button izquierdo" (click)="page('','crear')">
+  <ion-icon name="add-circle"></ion-icon>
+</ion-button>

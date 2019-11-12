@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { Platform, NavController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { DataService } from './models/data-service';
+import { DataService } from './services/data-service';
 
 @Component({
   selector: 'app-root',

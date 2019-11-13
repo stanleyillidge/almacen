@@ -65,7 +65,8 @@ export class CreateUsuariosPage implements OnInit {
     let este = this;
     this.usuario = this.newUsuarioForm.value;
     this.usuario['uid'] = this.key;
-    this.ds.CloudFunctionUsuarios(this.newUsuarioForm.value,this.accion).then(()=>{
+    this.usuario.key = this.key;
+    this.ds.CloudFunctionUsuarios(this.usuario,this.accion).then(()=>{
       este.navCtrl.pop()
     })
   }

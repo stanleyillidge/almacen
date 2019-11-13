@@ -436,6 +436,7 @@ export class DataService {
                     este.databaseEvents('Usuarios')
                 }
                 if(userRecord.data){
+                    usuario.key = userRecord.data;
                     este.database.Usuarios[userRecord.data] = este.iteraModelo(modelo, usuario);
                     este.storage.set('database', JSON.stringify(este.database)).then(()=>{
                         este.UsuariosObserver.next(este.database);

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-entradas',
-  templateUrl: './entradas.page.html',
-  styleUrls: ['./entradas.page.scss'],
+  selector: 'app-ingresos',
+  templateUrl: './ingresos.page.html',
+  styleUrls: ['./ingresos.page.scss'],
 })
-export class EntradasPage implements OnInit {
+export class IngresosPage implements OnInit {
   toggle:boolean = false;
   constructor() { }
 

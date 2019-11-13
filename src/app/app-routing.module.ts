@@ -6,7 +6,7 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import('./pages/tabs/tabs.module').then(m => m.TabsPageModule)
   },
-  { path: 'entradas', loadChildren: './pages/entradas/entradas.module#EntradasPageModule' },
+  { path: 'ingresos', loadChildren: './pages/ingresos/ingresos.module#IngresosPageModule' },
   { path: 'salidas', loadChildren: './pages/salidas/salidas.module#SalidasPageModule' },
   { path: 'movimientos', loadChildren: './pages/movimientos/movimientos.module#MovimientosPageModule' },
   { path: 'productos', loadChildren: './pages/productos/productos.module#ProductosPageModule' },

@@ -3,18 +3,40 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-buttons slot="end">
-      <ion-icon class="buscar-top" name="search"></ion-icon>
-    </ion-buttons>
-    <ion-title>Entradas</ion-title>
+    <ion-row align-items-center>
+      <ion-title *ngIf="!searchTest">Ingresos</ion-title>
+      <ion-col align-items-center *ngIf="searchTest" no-padding size="12">
+        <ion-searchbar
+          #autofocus
+          (ionChange)="onInput($event)"
+          (ionBlur)="onBlur($event)"
+          color="dark"
+          show-cancel-button>
+        </ion-searchbar>
+      </ion-col>
+      <ion-icon class="sb" *ngIf="!searchTest" (click)="click()" name="search"></ion-icon>
+    </ion-row>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [ngClass]="{ 'blur' : toggle }" no-border>
+  <ion-row>
+    <ion-list-header *ngIf="usuarios['admin']">
+      <ion-label>Administradores</ion-label>
+    </ion-list-header>
+    <ion-col *ngFor="let d of usuarios['admin']">
+      <ion-item *ngIf="d.rol=='admin'" (click)="page(d,'editar')">
+        <ion-label>
+          <h2>{{d.nombre}}</h2>
+          <p>{{d.telefono}}</p>
+        </ion-label>
+      </ion-item>
+    </ion-col>
+  </ion-row>
 </ion-content>
 <ion-button class="almacen-button derecho">
   <ion-icon name="barcode"></ion-icon>
 </ion-button>
-<ion-button class="almacen-button izquierdo">
+<ion-button class="almacen-button izquierdo" (click)="page('','crear')">
   <ion-icon name="add-circle"></ion-icon>
 </ion-button>

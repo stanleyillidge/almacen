@@ -14,7 +14,10 @@ const routes: Routes = [
   { path: 'bodegas', loadChildren: './pages/bodegas/bodegas.module#BodegasPageModule' },
   { path: 'create-bodega', loadChildren: './pages/create-bodega/create-bodega.module#CreateBodegaPageModule' },
   { path: 'usuarios', loadChildren: './pages/usuarios/usuarios.module#UsuariosPageModule' },
-  { path: 'create-usuarios', loadChildren: './pages/create-usuarios/create-usuarios.module#CreateUsuariosPageModule' }
+  { path: 'create-usuarios', loadChildren: './pages/create-usuarios/create-usuarios.module#CreateUsuariosPageModule' },
+  { path: 'create-ingreso', loadChildren: './pages/create-ingreso/create-ingreso.module#CreateIngresoPageModule' },
+  { path: 'create-salida', loadChildren: './pages/create-salida/create-salida.module#CreateSalidaPageModule' },
+  { path: 'create-movimiento', loadChildren: './pages/create-movimiento/create-movimiento.module#CreateMovimientoPageModule' }
 ];
 @NgModule({
   imports: [

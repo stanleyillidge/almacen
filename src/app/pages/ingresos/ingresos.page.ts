@@ -11,8 +11,8 @@ import { NavController, AlertController, IonSearchbar } from '@ionic/angular';
 export class IngresosPage implements OnInit {
   @ViewChild('autofocus', { static: false }) searchbar: IonSearchbar;
   database: LocalDatabase;
-  usuarios: any;
-  usuariost: any;
+  inventarios: any;
+  inventariost: any;
   searchTest: boolean = false;
   constructor(
     public ds:  DataService,
@@ -20,50 +20,50 @@ export class IngresosPage implements OnInit {
     public alertController: AlertController
   ) { 
     let este = this;
-    this.ds.UsuariosObserver.subscribe((newData) => {
-      console.log('Se actualizó un Usuario',newData);
+    this.ds.InventarioObserver.subscribe((newData) => {
+      console.log('Se actualizó un inventario',newData);
       this.database = newData;
       this.actualiza(this.database)
-      console.log(this.usuarios)
+      console.log(this.inventarios)
     });
   }
   onInput(ev:any){
     // Reset items back to all of the items
     // this.initializeItems();
-    // this.usuarios = this.usuariost;
-    this.usuarios['admin'] = this.usuariost['admin']
-    this.usuarios['proveedor'] = this.usuariost['proveedor']
-    this.usuarios['empleado'] = this.usuariost['empleado']
-    this.usuarios['cliente'] = this.usuariost['cliente']
-    // console.log(this.usuariost)
+    // this.inventarios = this.inventariost;
+    this.inventarios['admin'] = this.inventariost['admin']
+    this.inventarios['proveedor'] = this.inventariost['proveedor']
+    this.inventarios['empleado'] = this.inventariost['empleado']
+    this.inventarios['cliente'] = this.inventariost['cliente']
+    // console.log(this.inventariost)
     // set val to the value of the searchbar
     const val = ev.target.value;
 
     // if the value is an empty string don't filter the items
-    if(this.usuarios['admin']){
+    if(this.inventarios['admin']){
       if (val && val.trim() != '') {
-        this.usuarios['admin'] = this.usuarios['admin'].filter((u) => {
+        this.inventarios['admin'] = this.inventarios['admin'].filter((u) => {
           return (u.nombre.toLowerCase().indexOf(val.toLowerCase()) > -1) || (u.cedula.toLowerCase().indexOf(val.toLowerCase()) > -1);
         })
       }
     }
-    if(this.usuarios['proveedor']){
+    if(this.inventarios['proveedor']){
       if (val && val.trim() != '') {
-        this.usuarios['proveedor'] = this.usuarios['proveedor'].filter((a) => {
+        this.inventarios['proveedor'] = this.inventarios['proveedor'].filter((a) => {
           return (a.nombre.toLowerCase().indexOf(val.toLowerCase()) > -1) || (a.cedula.toLowerCase().indexOf(val.toLowerCase()) > -1);
         })
       }
     }
-    if(this.usuarios['empleado']){
+    if(this.inventarios['empleado']){
       if (val && val.trim() != '') {
-        this.usuarios['empleado'] = this.usuarios['empleado'].filter((m) => {
+        this.inventarios['empleado'] = this.inventarios['empleado'].filter((m) => {
           return (m.nombre.toLowerCase().indexOf(val.toLowerCase()) > -1) || (m.cedula.toLowerCase().indexOf(val.toLowerCase()) > -1);
         })
       }
     }
-    if(this.usuarios['cliente']){
+    if(this.inventarios['cliente']){
       if (val && val.trim() != '') {
-        this.usuarios['cliente'] = this.usuarios['cliente'].filter((n) => {
+        this.inventarios['cliente'] = this.inventarios['cliente'].filter((n) => {
           return (n.nombre.toLowerCase().indexOf(val.toLowerCase()) > -1) || (n.cedula.toLowerCase().indexOf(val.toLowerCase()) > -1);
         })
       }
@@ -79,7 +79,7 @@ export class IngresosPage implements OnInit {
     this.searchTest = !this.searchTest;
   }
   page(data:any,accion:string){
-    let page = 'create-usuarios'
+    let page = 'create-ingreso'
     console.log(accion,data)
     if(data == ''){
       data = {}
@@ -94,16 +94,16 @@ export class IngresosPage implements OnInit {
   }
   actualiza(data){
     let este = this;
-    este.usuariost = {};
-    este.usuarios = {};
-    if(data.Usuarios){
-      Object.keys(data.Usuarios).map(function(i){
-        if(!este.usuarios[data.Usuarios[i].rol]){
-          este.usuarios[data.Usuarios[i].rol]=[];
-          este.usuariost[data.Usuarios[i].rol]=[];
+    este.inventariost = {};
+    este.inventarios = {};
+    if(data.inventarios){
+      Object.keys(data.inventarios).map(function(i){
+        if(!este.inventarios[data.inventarios[i].rol]){
+          este.inventarios[data.inventarios[i].rol]=[];
+          este.inventariost[data.inventarios[i].rol]=[];
         }
-        este.usuarios[data.Usuarios[i].rol].push(data.Usuarios[i]);
-        este.usuariost[data.Usuarios[i].rol].push(data.Usuarios[i]);
+        este.inventarios[data.inventarios[i].rol].push(data.inventarios[i]);
+        este.inventariost[data.inventarios[i].rol].push(data.inventarios[i]);
       });
     }
   }

@@ -1,11 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 
 import { IonicModule } from '@ionic/angular';
 
 import { CreateIngresoPage } from './create-ingreso.page';
+
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatRippleModule } from '@angular/material';
 
 const routes: Routes = [
   {
@@ -18,8 +21,15 @@ const routes: Routes = [
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     IonicModule,
-    RouterModule.forChild(routes)
+    RouterModule.forChild(routes),
+    MatAutocompleteModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatRippleModule,
+    MatIconModule
   ],
   declarations: [CreateIngresoPage]
 })

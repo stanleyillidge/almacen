@@ -23,6 +23,7 @@ import { FileTransfer } from '@ionic-native/file-transfer/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { ImageResizer } from '@ionic-native/image-resizer/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // Your web app's Firebase configuration
 var firebaseConfig = {
@@ -50,7 +51,8 @@ firebase.initializeApp(firebaseConfig);
     AngularFireAuthModule,
     AngularFirestoreModule,
     AngularFireDatabaseModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
+    BrowserAnimationsModule
   ],
   providers: [
     StatusBar,

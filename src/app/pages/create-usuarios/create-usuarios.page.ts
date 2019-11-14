@@ -14,8 +14,6 @@ import { Usuario } from 'src/app/models/data-models';
 export class CreateUsuariosPage implements OnInit {
   newUsuarioForm: FormGroup;
   accion:string;
-  Path: any = "/assets/shapes.svg";
-  imagen: File | Blob | Uint8Array;
   key: string;
   usuario: any;
   constructor(

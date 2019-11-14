@@ -1,9 +1,36 @@
-<ion-header>
+<ion-header no-border>
   <ion-toolbar>
-    <ion-title>create-ingreso</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Ingreso al inventario</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-
+<ion-content class="ion-padding" no-border>
+  <!-- <form [formGroup]="newIngresoForm" padding-right>
+  </form> -->
+  <form class="example-form">
+    <mat-form-field class="example-full-width">
+      <input type="text" placeholder="Pick one" aria-label="Number" matInput [formControl]="myControl" [matAutocomplete]="auto">
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let option of options" [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+  </form>
 </ion-content>
+
+<ion-button
+class="almacen-button izquierdo"
+(click)="navCtrl.pop()">
+  <ion-icon name="remove-circle"></ion-icon>
+</ion-button>
+
+<ion-button
+class="almacen-button derecho"
+[disabled]="!newIngresoForm.valid"
+(click)="creaDocumento()">
+  <ion-icon name="add-circle"></ion-icon>
+</ion-button>

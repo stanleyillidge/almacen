@@ -3,15 +3,14 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-row align-items-center>
+    <ion-row class="ion-align-items-center">
       <ion-title *ngIf="!searchTest">Ingresos</ion-title>
-      <ion-col align-items-center *ngIf="searchTest" no-padding size="12">
+      <ion-col class="ion-align-items-center ion-no-padding" *ngIf="searchTest" size="12">
         <ion-searchbar
           #autofocus
           (ionChange)="onInput($event)"
           (ionBlur)="onBlur($event)"
-          color="dark"
-          show-cancel-button>
+          color="dark">
         </ion-searchbar>
       </ion-col>
       <ion-icon class="sb" *ngIf="!searchTest" (click)="click()" name="search"></ion-icon>
@@ -20,11 +19,11 @@
 </ion-header>
 
 <ion-content [ngClass]="{ 'blur' : toggle }" no-border>
-  <ion-row>
-    <ion-list-header *ngIf="usuarios['admin']">
+  <ion-row *ngIf="inventarios">
+    <ion-list-header *ngIf="inventarios['admin']">
       <ion-label>Administradores</ion-label>
     </ion-list-header>
-    <ion-col *ngFor="let d of usuarios['admin']">
+    <ion-col *ngFor="let d of inventarios['admin']">
       <ion-item *ngIf="d.rol=='admin'" (click)="page(d,'editar')">
         <ion-label>
           <h2>{{d.nombre}}</h2>

@@ -37,16 +37,16 @@
       <!-- <mat-hint align="end">{{postalCode.value.length}} / 5</mat-hint> -->
     </mat-form-field>
   </div>
-  <ion-title>Productos: {{total['unid'] | number}}</ion-title>
-  <ion-title>Total: $ {{total['precio'] | number}}</ion-title>
-</ion-header>
-
-<ion-content class="ion-padding" no-border>
-  <ion-fab vertical="top" horizontal="end">
+  <ion-title class="titulo">Productos: {{total['unid'] | number}}</ion-title>
+  <ion-title class="titulo">Total: $ {{total['precio'] | number}}</ion-title>
+  <ion-fab vertical="bottom" horizontal="end">
     <ion-fab-button class="add" (click)="addProducto()">
       <ion-icon name="add-circle"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+</ion-header>
+
+<ion-content class="ion-padding" no-border>
   <!-- listaProductos -->
   <div class="ion-padding" *ngIf="listaProductos">
     <ion-row *ngFor="let d of listaProductos">

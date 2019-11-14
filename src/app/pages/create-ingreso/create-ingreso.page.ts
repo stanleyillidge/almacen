@@ -84,7 +84,7 @@ export class CreateIngresoPage implements OnInit {
         this.total['precio'] += (Number(this.database.Productos[i].precio) * Number(cantidades))
         this.total['unid'] += Number(cantidades); 
         data['cantitades'] = Number(cantidades);
-        this.listaProductos.push(data);
+        this.listaProductos.unshift(data);
         this.ProductoControl.setValue('');
         this.CantidadControl.setValue('');
         console.log(this.listaProductos)

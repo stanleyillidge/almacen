@@ -3,7 +3,9 @@ import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services/data-service';
-import { Documento } from 'src/app/models/data-models';
+import { Documento, LocalDatabase } from 'src/app/models/data-models';
+import { Observable } from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 
 @Component({
   selector: 'app-create-ingreso',
@@ -11,12 +13,25 @@ import { Documento } from 'src/app/models/data-models';
   styleUrls: ['./create-ingreso.page.scss'],
 })
 export class CreateIngresoPage implements OnInit {
-  myControl = new FormControl();
-  options: string[] = ['One', 'Two', 'Three'];
+  ProveedoresControl = new FormControl();
+  proveedores: string[] = [];
+  filteredProveedores: Observable<string[]>;
+
+  ProductoControl = new FormControl();
+  productos: string[] = [];
+  filteredProductos: Observable<string[]>;
+
+  CantidadControl = new FormControl();
+  
   newIngresoForm: FormGroup;
   accion:string;
   key: string;
   ingreso: any;
+  usuariost: {};
+  usuarios: {};
+  database: LocalDatabase;
+  listaProductos:any;
+  total: any;
   constructor(
     public navCtrl: NavController,
     public fb: FormBuilder,
@@ -59,16 +74,81 @@ export class CreateIngresoPage implements OnInit {
     data.ListaDetallada = ''
     this.creaFormulario(data);
   }
+  addProducto(){
+    const nombre = this.ProductoControl.value
+    const cantidades = this.CantidadControl.value
+    let data = {}
+    for(let i in this.database.Productos){
+      if(this.database.Productos[i].nombre == nombre){
+        data = this.database.Productos[i];
+        this.total['precio'] += (Number(this.database.Productos[i].precio) * Number(cantidades))
+        this.total['unid'] += Number(cantidades); 
+        data['cantitades'] = Number(cantidades);
+        this.listaProductos.push(data);
+        this.ProductoControl.setValue('');
+        this.CantidadControl.setValue('');
+        console.log(this.listaProductos)
+      }
+    }
+  }
   creaDocumento(){
     let este = this;
     this.ingreso = this.newIngresoForm.value;
     this.ingreso['uid'] = this.key;
     this.ingreso.key = this.key;
+    console.log(this.ProveedoresControl)
     // this.ds.CloudFunctionDocumentos(this.ingreso,this.accion).then(()=>{
     //   este.navCtrl.pop()
     // })
   }
   ngOnInit() {
+    this.total = {};
+    this.total['precio'] = 0;
+    this.total['unid'] = 0;
+    this.listaProductos = [];
+    this.database = this.ds.Database
+    this.actualiza(this.database)
+    for(let i in this.usuarios['proveedor']){
+      this.proveedores.push(this.usuarios['proveedor'][i].nombre)
+    }
+    this.filteredProductos = this.ProductoControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(values => this._filterProductos(values))
+      );
+    this.filteredProveedores = this.ProveedoresControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filterProveedores(value))
+      );
+  }
+  actualiza(data){
+    let este = this;
+    este.usuariost = {};
+    este.usuarios = {};
+    if(data.Productos){
+      Object.keys(data.Productos).map(function(i){
+        este.productos.push(data.Productos[i].nombre)
+      });
+    }
+    if(data.Usuarios){
+      Object.keys(data.Usuarios).map(function(i){
+        if(!este.usuarios[data.Usuarios[i].rol]){
+          este.usuarios[data.Usuarios[i].rol]=[];
+          este.usuariost[data.Usuarios[i].rol]=[];
+        }
+        este.usuarios[data.Usuarios[i].rol].push(data.Usuarios[i]);
+        este.usuariost[data.Usuarios[i].rol].push(data.Usuarios[i]);
+      });
+    }
+  }
+  private _filterProveedores(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.proveedores.filter(option => option.toLowerCase().includes(filterValue));
+  }
+  private _filterProductos(values: string): string[] {
+    const filterValues = values.toLowerCase();
+    return this.productos.filter(options => options.toLowerCase().includes(filterValues));
   }
 
 }

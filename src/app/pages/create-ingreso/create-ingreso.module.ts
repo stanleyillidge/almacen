@@ -8,7 +8,7 @@ import { IonicModule } from '@ionic/angular';
 import { CreateIngresoPage } from './create-ingreso.page';
 
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatRippleModule } from '@angular/material';
+import {MatSelectModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatRippleModule } from '@angular/material';
 
 const routes: Routes = [
   {
@@ -29,7 +29,8 @@ const routes: Routes = [
     MatFormFieldModule,
     MatInputModule,
     MatRippleModule,
-    MatIconModule
+    MatIconModule,
+    MatSelectModule
   ],
   declarations: [CreateIngresoPage]
 })

@@ -1,12 +1,31 @@
-// input{
-//     color: #000;
-// }
-// .example-form {
-//     min-width: 150px;
-//     max-width: 500px;
-//     width: 100%;
-// }
-
-// .example-full-width {
-//     width: 100%;
-// }
+form{
+    text-align: center;
+}
+mat-form-field{
+    width: 80vw;
+}
+.add{
+    --background: var(--selected);
+    --background-hover: #FF9800;
+    ion-icon{
+        color: var(--items);
+        font-size: 2.5em;
+    }
+}
+.cant,.precio{
+    font-size: 4vh;
+}
+.unid,.nombre{
+    font-size: 3.4vw;
+    text-transform: capitalize;
+}
+ion-item{
+    --background: transparent !important;
+    --border-color: transparent !important;
+}
+.parent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}

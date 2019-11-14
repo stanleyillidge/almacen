@@ -5,32 +5,86 @@
     </ion-buttons>
     <ion-title>Ingreso al inventario</ion-title>
   </ion-toolbar>
+  <div style="margin: 0 0 -1em 0;" class="parent">
+    <mat-form-field class="example-full-width" appearance="outline">
+      <mat-label>Proveedor</mat-label>
+      <input type="text" placeholder="Elija uno" aria-label="Number" matInput [formControl]="ProveedoresControl" [matAutocomplete]="auto">
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let proveedores of filteredProveedores | async" [value]="proveedores">
+          {{proveedores}}
+        </mat-option>
+      </mat-autocomplete>
+      <!-- <mat-icon matSuffix>sentiment_very_satisfied</mat-icon> -->
+      <!-- <mat-hint>Nombre del proveedor</mat-hint> -->
+    </mat-form-field>
+  </div>
+  <div class="parent">
+    <mat-form-field class="example-full-width">
+      <mat-label>Productos</mat-label>
+      <input type="text" aria-label="Number" matInput [formControl]="ProductoControl" [matAutocomplete]="auto2">
+      <mat-autocomplete #auto2="matAutocomplete">
+        <mat-option *ngFor="let productos of filteredProductos | async" [value]="productos">
+          {{productos}}
+        </mat-option>
+      </mat-autocomplete>
+      <!-- <mat-icon matSuffix>add_box</mat-icon> -->
+      <!-- <mat-hint>Nombre del proveedor</mat-hint> -->
+    </mat-form-field>
+  </div>
+  <div class="parent">
+    <mat-form-field class="example-full-width">
+      <input matInput [formControl]="CantidadControl" #postalCode maxlength="5" placeholder="Cantidad">
+      <!-- <mat-hint align="end">{{postalCode.value.length}} / 5</mat-hint> -->
+    </mat-form-field>
+  </div>
+  <ion-title>Productos: {{total['unid'] | number}}</ion-title>
+  <ion-title>Total: $ {{total['precio'] | number}}</ion-title>
 </ion-header>
 
 <ion-content class="ion-padding" no-border>
-  <!-- <form [formGroup]="newIngresoForm" padding-right>
-  </form> -->
-  <form class="example-form">
-    <mat-form-field class="example-full-width">
-      <input type="text" placeholder="Pick one" aria-label="Number" matInput [formControl]="myControl" [matAutocomplete]="auto">
-      <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let option of options" [value]="option">
-          {{option}}
-        </mat-option>
-      </mat-autocomplete>
-    </mat-form-field>
-  </form>
+  <ion-fab vertical="top" horizontal="end">
+    <ion-fab-button class="add" (click)="addProducto()">
+      <ion-icon name="add-circle"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <!-- listaProductos -->
+  <div class="ion-padding" *ngIf="listaProductos">
+    <ion-row *ngFor="let d of listaProductos">
+      <ion-col size="4">
+        <ion-item>
+          <ion-label>
+            <h2 class="unid">Unidades</h2>
+            <p class="cant">{{d.cantitades | number}}</p>
+          </ion-label>
+        </ion-item>
+      </ion-col>
+      <ion-col size="8">
+        <ion-item>
+          <ion-label>
+            <h2 class="nombre">{{d.nombre}}</h2>
+            <p class="precio">$ {{d.precio | number}}</p>
+          </ion-label>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </div>
 </ion-content>
 
-<ion-button
+
+
+<!-- <ion-button
 class="almacen-button izquierdo"
 (click)="navCtrl.pop()">
   <ion-icon name="remove-circle"></ion-icon>
-</ion-button>
+</ion-button> -->
 
 <ion-button
 class="almacen-button derecho"
-[disabled]="!newIngresoForm.valid"
 (click)="creaDocumento()">
-  <ion-icon name="add-circle"></ion-icon>
+  <!-- <ion-icon name="add-circle"></ion-icon> -->
+  <!-- <ion-icon name="checkbox-outline"></ion-icon> -->
+  <ion-icon name="checkbox"></ion-icon>
+  <!-- <i class="material-icons">
+      move_to_inbox
+      </i> -->
 </ion-button>

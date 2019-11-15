@@ -16,7 +16,7 @@ mat-form-field{
     margin: 0 0 0.5em 1em;
 }
 .cant,.precio{
-    font-size: 4vh;
+    font-size: 3.4vh;
     text-align: center;
 }
 .unid,.nombre{
@@ -24,8 +24,15 @@ mat-form-field{
     text-transform: capitalize;
 }
 ion-item{
-    --background: transparent !important;
+    --background: #1e3246 !important;
     --border-color: transparent !important;
+    margin: -3px 0 5px 0;
+}
+.item-options-end ion-item-option:last-child,.item-options-start ion-item-option:first-child{
+    margin: -3px 0 5px 0;
+    background: var(--selected);
+    color: var(--items);
+    font-weight: bold;
 }
 .parent {
     display: flex;

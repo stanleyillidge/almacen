@@ -37,7 +37,7 @@
       <!-- <mat-hint align="end">{{postalCode.value.length}} / 5</mat-hint> -->
     </mat-form-field>
   </div>
-  <ion-title class="titulo">Items: {{total['unid'] | number}}</ion-title>
+  <ion-title class="titulo">Items: {{listaProductos.length | number}} - Unids: {{total['unid'] | number}}</ion-title>
   <ion-title class="titulo">Total: $ {{total['precio'] | number}}</ion-title>
   <ion-fab vertical="bottom" horizontal="end">
     <ion-fab-button class="add" (click)="addProducto()">
@@ -49,24 +49,34 @@
 <ion-content class="ion-padding" no-border>
   <!-- listaProductos -->
   <div class="ion-padding" *ngIf="listaProductos">
-    <ion-row *ngFor="let d of listaProductos">
-      <ion-col size="8">
-        <ion-item>
-          <ion-label>
-            <h2 class="nombre">{{d.nombre}}</h2>
-            <p class="precio">$ {{d.precio | number}}</p>
-          </ion-label>
-        </ion-item>
-      </ion-col>
-      <ion-col size="4">
-        <ion-item>
-          <ion-label>
-            <h2 class="unid">Unidades</h2>
-            <p class="cant">{{d.cantitades | number}}</p>
-          </ion-label>
-        </ion-item>
-      </ion-col>
-    </ion-row>
+    <ion-item-sliding *ngFor="let d of listaProductos">
+      <ion-item>
+        <ion-col size="8">
+          <ion-item>
+            <ion-label>
+              <h2 class="nombre">{{d.nombre}}</h2>
+              <p class="precio">$ {{d.precio | number}}</p>
+            </ion-label>
+          </ion-item>
+        </ion-col>
+        <ion-col size="4">
+          <ion-item>
+            <ion-label>
+              <h2 class="unid">Unidades</h2>
+              <p class="cant">{{d.cantitades | number}}</p>
+            </ion-label>
+          </ion-item>
+        </ion-col>
+      </ion-item>
+
+      <ion-item-options side="start">
+        <ion-item-option>Editar</ion-item-option>
+      </ion-item-options>
+
+      <ion-item-options side="end">
+        <ion-item-option color="danger">Borrar</ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
   </div>
 </ion-content>
 

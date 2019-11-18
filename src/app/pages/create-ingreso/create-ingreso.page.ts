@@ -87,7 +87,7 @@ export class CreateIngresoPage implements OnInit {
         this.listaProductos.unshift(data);
         this.ProductoControl.setValue('');
         this.CantidadControl.setValue('');
-        console.log(this.listaProductos)
+        console.log(this.listaProductos,'hola mundo')
       }
     }
   }

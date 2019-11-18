@@ -14,19 +14,33 @@ mat-form-field{
 }
 .titulo{
     margin: 0 0 0.5em 1em;
+    font-size: 5.6vw;
+}
+@media (min-width: 412px) { // vista web
+    .titulo{
+        font-size: 3vw;
+    }
 }
 .cant,.precio{
-    font-size: 3.4vh;
-    text-align: center;
+    font-size: 6vw;
+    line-height: inherit;
 }
 .unid,.nombre{
-    font-size: 3.4vw;
+    font-size: 4vw;
     text-transform: capitalize;
+    white-space: pre-wrap;
 }
 ion-item{
     --background: #1e3246 !important;
     --border-color: transparent !important;
-    margin: -3px 0 5px 0;
+    ion-col{
+        padding: 0;
+        width: -webkit-fill-available !important;
+        max-width: -webkit-fill-available !important;
+        flex: 0 0 55vw !important;
+        margin: 0px 0em 0px -1em;
+    }
+    // margin: -3px 0 5px 0;
 }
 .item-options-end ion-item-option:last-child,.item-options-start ion-item-option:first-child{
     margin: -3px 0 5px 0;

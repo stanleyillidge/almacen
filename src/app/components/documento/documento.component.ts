@@ -1,0 +1,58 @@
+import { Component, OnInit, Input } from '@angular/core';
+import { DataService } from 'src/app/services/data-service';
+import { LocalDatabase } from 'src/app/models/data-models';
+
+@Component({
+  selector: 'documento',
+  templateUrl: './documento.component.html',
+  styleUrls: ['./documento.component.scss'],
+})
+export class DocumentoComponent implements OnInit {
+
+  @Input('data') data;
+  icono: string;
+  valor: number;
+  fecha: {};
+  database: LocalDatabase;
+  nombre: any;
+
+  constructor(
+    public ds:  DataService
+  ) { }
+
+  ngOnInit() {
+    this.database = this.ds.Database
+    let d = new Date(this.data.creacion);
+    const dias = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
+    const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Sept", "Octubre", "Nov", "Dec"];
+    this.fecha = {}
+    this.fecha['ds'] = dias[d.getDay()];
+    this.fecha['d'] = d.getDate();
+    this.fecha['m'] = meses[d.getMonth()];
+    this.fecha['a'] = d.getFullYear();
+    this.fecha['f'] = new Date(this.data.creacion).toDateString();
+    this.nombre = this.ds.capitalize(this.ds.Database.Usuarios[this.data.proveedor].nombre)
+    this.data.estado = this.ds.capitalize(this.data.estado);
+    switch (this.data.tipo) {
+      case 'ingreso':
+        this.icono = 'archive'
+        break;
+      case 'salida':
+        this.icono = 'unarchive'
+        break;
+      case 'traslado':
+        this.icono = 'archive'
+        break;
+      case 'notaDebito':
+        this.icono = 'archive'
+        break;
+      case 'notaCredito':
+        this.icono = 'archive'
+        break;
+    
+      default:
+        break;
+    }
+  }
+
+}

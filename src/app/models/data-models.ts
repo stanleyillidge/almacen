@@ -99,17 +99,43 @@
             public proveedor: string // PushID del proveedor
             public comprador: string // PushID del comprador al que va dirigida
             public usuario: string // PushID del empleado que realiza el documento
-            public ListaDetallada: string // PushID de la lista detallada de productos relacionados en el documento
-        constructor() {}
+            public valor: number // monto total de todos los productos relacionnados en el documentos
+        constructor() {
+            if(!this.tipo){
+                this.tipo = 'ingreso'
+            }
+            if(!this.creacion){
+                this.creacion = new Date
+            }
+            if(!this.estado){
+                this.estado = 'pendiente'
+            }
+            if(!this.numProductos){
+                this.numProductos = 0
+            }
+            if(!this.proveedor){
+                this.proveedor = ''
+            }
+            if(!this.comprador){
+                this.comprador = ''
+            }
+            if(!this.usuario){
+                this.usuario = ''
+            }
+            if(!this.valor){
+                this.valor = 0
+            }
+        }
     }
     export class ListaDetallada {
         // se incluiran los productos uno a uno con un PushID para cada ingreso
         public key: string // PushID del producto en la lista
             public tipo: 'ingreso' | 'salida' | 'traslado' | 'notaDebito' | 'notaCredito'
             public creacion: Date
+            public nombre: string // nombre del producto
             public bodega: string // PushID de la bodega
-            public documento: string // PushID del documento
-            public vendedor: string // PushID del vendedor // campo heredado del documento
+            public documento: string // PushID del documento al cual pertenece el elemento
+            public proveedor: string // PushID del vendedor // campo heredado del documento
             public comprador: string // PushID del comprador al que va dirigida // campo heredado del documento
             public usuario: string // PushID del empleado que realiza el documento // campo heredado del documento
             public producto: string // PushID del Producto relacionado en el documento
@@ -123,9 +149,49 @@
                 }else if (this.tipo =='salida') {
                     this.precio = 0
             }
+            if(!this.creacion){
+                this.creacion = new Date();
+            }
+            if(!this.nombre){
+                this.nombre = ''
+            }
+            if(!this.bodega){
+                this.bodega = ''
+            }
+            if(!this.documento){
+                this.documento = ''
+            }
+            if(!this.proveedor){
+                this.proveedor = ''
+            }
+            if(!this.comprador){
+                this.comprador = ''
+            }
+            if(!this.usuario){
+                this.usuario = ''
+            }
+            if(!this.producto){
+                this.producto = ''
+            }
+            if(!this.precio){
+                this.precio = 0
+            }
+            if(!this.costo){
+                this.costo = 0
+            }
+            if(!this.descuento){
+                this.descuento = 0
+            }
+            if(!this.cantidad){
+                this.cantidad = 0
+            }
         }
         get Total(){
-            return (this.precio * (1 - this.descuento) * this.cantidad)
+            if (this.tipo =='ingreso') {
+                return (this.costo * (1 - this.descuento) * this.cantidad)
+            }else{
+                return (this.precio * (1 - this.descuento) * this.cantidad)
+            }
         }
     }
     export class Producto {
@@ -202,7 +268,7 @@
             public precio: number // campo heredado del Producto
             public costo: number // precio de compra del producto en el documento
             public serie: string // codigo de barras del embalaje
-            public vendedor: string // PushID del vendedor // campo heredado del documento
+            public proveedor: string // PushID del proveedor // campo heredado del documento
             public usuario: string // PushID del empleado que realiza el documento // campo heredado del documento
             public documento: string // PushID del documento
         constructor() {
@@ -239,8 +305,8 @@
             if(!this.serie){
                 this.serie = ''
             }
-            if(!this.vendedor){
-                this.vendedor = ''
+            if(!this.proveedor){
+                this.proveedor = ''
             }
             if(!this.usuario){
                 this.usuario = ''
@@ -255,7 +321,7 @@
         public Usuarios: { [key: string]: Usuario };
         public Bodegas: { [key: string]: Bodega };
         public Documentos: { [key: string]: Documento };
-        public ListaDetalladas: { [key: string]: ListaDetallada };
+        public Listas: { [key: string]: ListaDetallada };
         public Productos: { [key: string]: Producto };
         public Inventario: { [key: string]: Inventario };
     }

@@ -3,9 +3,11 @@ import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services/data-service';
-import { Documento, LocalDatabase } from 'src/app/models/data-models';
+import { Documento, LocalDatabase, ListaDetallada } from 'src/app/models/data-models';
 import { Observable } from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
+import * as firebase from 'firebase/app';
+import 'firebase/database';
 
 @Component({
   selector: 'app-create-ingreso',
@@ -22,16 +24,18 @@ export class CreateIngresoPage implements OnInit {
   filteredProductos: Observable<string[]>;
 
   CantidadControl = new FormControl();
+  costoControl = new FormControl();
   
   newIngresoForm: FormGroup;
   accion:string;
   key: string;
-  ingreso: any;
   usuariost: {};
   usuarios: {};
   database: LocalDatabase;
   listaProductos:any;
   total: any;
+  DocPushID: string;
+  lista: {};
   constructor(
     public navCtrl: NavController,
     public fb: FormBuilder,
@@ -43,9 +47,8 @@ export class CreateIngresoPage implements OnInit {
       this.creaFormularioVacio()
     }else{
       this.key = this.route.snapshot.paramMap.get('key');
-      this.ingreso = this.ds.Database.Documentos[this.key];
-      console.log(this.ingreso)
-      this.creaFormulario(this.ingreso)
+      console.log(this.ds.Database.Documentos[this.key])
+      this.creaFormulario(this.ds.Database.Documentos[this.key])
     }
   }
   creaFormulario(data){
@@ -57,7 +60,7 @@ export class CreateIngresoPage implements OnInit {
         proveedor: new FormControl(data.proveedor, Validators.compose([Validators.required])),
         comprador: new FormControl(data.comprador, Validators.compose([Validators.required])),
         usuario: new FormControl(data.usuario, Validators.compose([Validators.required])),
-        ListaDetallada: new FormControl(data.ListaDetallada, Validators.compose([Validators.required]))
+        costo: new FormControl(data.costo, Validators.compose([Validators.required]))
       });
     //---------------------------------------
   }
@@ -71,42 +74,72 @@ export class CreateIngresoPage implements OnInit {
     data.proveedor = ''
     data.comprador = ''
     data.usuario = ''
-    data.ListaDetallada = ''
+    data['costo'] = 0;
     this.creaFormulario(data);
   }
   addProducto(){
     const nombre = this.ProductoControl.value
+    const proveedor = this.getKeyByValue(this.usuarios['proveedor'], this.ProveedoresControl.value,'nombre');
+    this.database.Documentos[this.DocPushID].proveedor = proveedor;
     const cantidades = this.CantidadControl.value
-    let data = {}
+    const costo = this.costoControl.value
+    const key = firebase.database().ref().push().key;
+    this.lista[key] = new ListaDetallada();
     for(let i in this.database.Productos){
       if(this.database.Productos[i].nombre == nombre){
-        data = this.database.Productos[i];
-        this.total['precio'] += (Number(this.database.Productos[i].precio) * Number(cantidades))
+        this.total['costo'] += (Number(costo) * Number(cantidades))
         this.total['unid'] += Number(cantidades);
-        data['cantitades'] = Number(cantidades);
-        this.listaProductos.unshift(data);
+        this.database.Documentos[this.DocPushID].valor = this.total['costo'];
+        this.database.Documentos[this.DocPushID].numProductos = this.total['unid'];
+        this.lista[key].key = key;
+        this.lista[key].tipo = this.database.Documentos[this.DocPushID].tipo;
+        this.lista[key].creacion = this.database.Documentos[this.DocPushID].creacion;
+        this.lista[key].bodega = 'por definir'
+        this.lista[key].documento = this.DocPushID;
+        this.lista[key].proveedor = proveedor
+        this.lista[key].comprador = 'su empresa'
+        this.lista[key].usuario = 'usuario autenticado en la app'
+        this.lista[key].producto = this.database.Productos[i].key;
+        this.lista[key].precio = this.database.Productos[i].precio;
+        this.lista[key].costo = Number(costo);
+        this.lista[key].descuento = this.database.Productos[i].descuento;
+        this.lista[key].cantidad = Number(cantidades);
+        this.lista[key]['nombre'] = this.database.Productos[i].nombre;
+        this.listaProductos.unshift(this.lista[key]);
         this.ProductoControl.setValue('');
-        this.CantidadControl.setValue('');
-        console.log(this.listaProductos,'hola mundo')
+        this.CantidadControl.setValue(0);
+        this.costoControl.setValue(0);
+        console.log(this.database)
       }
     }
   }
   creaDocumento(){
-    let este = this;
-    this.ingreso = this.newIngresoForm.value;
-    this.ingreso['uid'] = this.key;
-    this.ingreso.key = this.key;
-    console.log(this.ProveedoresControl)
-    // this.ds.CloudFunctionDocumentos(this.ingreso,this.accion).then(()=>{
-    //   este.navCtrl.pop()
-    // })
+    let este = this
+    // console.log(this.database)
+    this.ds.creaIngreso(this.database.Documentos[this.DocPushID],this.lista).then(a=>{
+      este.navCtrl.pop()
+    })
   }
   ngOnInit() {
     this.total = {};
-    this.total['precio'] = 0;
+    this.lista = {};
+    this.total['costo'] = 0;
     this.total['unid'] = 0;
     this.listaProductos = [];
     this.database = this.ds.Database
+    this.DocPushID = firebase.database().ref().push().key;
+    if(!this.database.Documentos){
+      this.database.Documentos = {};
+    }
+    this.database.Documentos[this.DocPushID] = new Documento;
+    this.database.Documentos[this.DocPushID].key = this.DocPushID;
+    this.database.Documentos[this.DocPushID].creacion = new Date();
+    this.database.Documentos[this.DocPushID].tipo = 'ingreso';
+    this.database.Documentos[this.DocPushID].estado = 'pendiente';
+    this.database.Documentos[this.DocPushID].numProductos = 0;
+    this.database.Documentos[this.DocPushID].valor = 0;
+    this.database.Documentos[this.DocPushID].comprador = 'su empresa';
+    this.database.Documentos[this.DocPushID].usuario = 'usuario autenticado en la app'
     this.actualiza(this.database)
     for(let i in this.usuarios['proveedor']){
       this.proveedores.push(this.usuarios['proveedor'][i].nombre)
@@ -140,6 +173,13 @@ export class CreateIngresoPage implements OnInit {
         este.usuarios[data.Usuarios[i].rol].push(data.Usuarios[i]);
         este.usuariost[data.Usuarios[i].rol].push(data.Usuarios[i]);
       });
+    }
+  }
+  getKeyByValue(objects, value,key) { 
+    for(let i in objects){
+      if(objects[i][key] == value){
+        return objects[i].key
+      }
     }
   }
   private _filterProveedores(value: string): string[] {

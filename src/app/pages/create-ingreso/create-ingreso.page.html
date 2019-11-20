@@ -33,12 +33,18 @@
   </div>
   <div class="parent">
     <mat-form-field class="example-full-width">
-      <input matInput [formControl]="CantidadControl" #postalCode maxlength="5" placeholder="Cantidad">
+      <input matInput [formControl]="CantidadControl" #cantidad maxlength="5" placeholder="Cantidad">
+      <!-- <mat-hint align="end">{{postalCode.value.length}} / 5</mat-hint> -->
+    </mat-form-field>
+  </div>
+  <div class="parent">
+    <mat-form-field class="example-full-width">
+      <input matInput [formControl]="costoControl" #costo maxlength="7" placeholder="Costo">
       <!-- <mat-hint align="end">{{postalCode.value.length}} / 5</mat-hint> -->
     </mat-form-field>
   </div>
   <ion-title class="titulo">Items: {{listaProductos.length | number}} - Unids: {{total['unid'] | number}}</ion-title>
-  <ion-title class="titulo">Total: $ {{total['precio'] | number}}</ion-title>
+  <ion-title class="titulo">Total: $ {{total['costo'] | number}}</ion-title>
   <ion-fab vertical="bottom" horizontal="end">
     <ion-fab-button class="add" (click)="addProducto()">
       <ion-icon name="add-circle"></ion-icon>
@@ -55,7 +61,7 @@
           <ion-item>
             <ion-label>
               <h2 class="nombre">{{d.nombre}}</h2>
-              <p class="precio">$ {{d.precio | number}}</p>
+              <p class="costo">$ {{d.costo | number}}</p>
             </ion-label>
           </ion-item>
         </ion-col>
@@ -63,7 +69,7 @@
           <ion-item>
             <ion-label>
               <h2 class="unid">Unidades</h2>
-              <p class="cant">{{d.cantitades | number}}</p>
+              <p class="cant">{{d.cantidad | number}}</p>
             </ion-label>
           </ion-item>
         </ion-col>

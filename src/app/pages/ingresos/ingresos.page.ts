@@ -11,8 +11,8 @@ import { NavController, AlertController, IonSearchbar } from '@ionic/angular';
 export class IngresosPage implements OnInit {
   @ViewChild('autofocus', { static: false }) searchbar: IonSearchbar;
   database: LocalDatabase;
-  inventarios: any;
-  inventariost: any;
+  ingresos: any;
+  ingresost: any;
   searchTest: boolean = false;
   constructor(
     public ds:  DataService,
@@ -24,47 +24,22 @@ export class IngresosPage implements OnInit {
       console.log('Se actualizó un inventario',newData);
       this.database = newData;
       this.actualiza(this.database)
-      console.log(this.inventarios)
+      console.log(this.ingresos)
     });
   }
   onInput(ev:any){
     // Reset items back to all of the items
     // this.initializeItems();
-    // this.inventarios = this.inventariost;
-    this.inventarios['admin'] = this.inventariost['admin']
-    this.inventarios['proveedor'] = this.inventariost['proveedor']
-    this.inventarios['empleado'] = this.inventariost['empleado']
-    this.inventarios['cliente'] = this.inventariost['cliente']
-    // console.log(this.inventariost)
+    // this.ingresos = this.ingresost;
+    this.ingresos = this.ingresost
+    // console.log(this.ingresost)
     // set val to the value of the searchbar
     const val = ev.target.value;
 
-    // if the value is an empty string don't filter the items
-    if(this.inventarios['admin']){
+    if(this.ingresos){
       if (val && val.trim() != '') {
-        this.inventarios['admin'] = this.inventarios['admin'].filter((u) => {
-          return (u.nombre.toLowerCase().indexOf(val.toLowerCase()) > -1) || (u.cedula.toLowerCase().indexOf(val.toLowerCase()) > -1);
-        })
-      }
-    }
-    if(this.inventarios['proveedor']){
-      if (val && val.trim() != '') {
-        this.inventarios['proveedor'] = this.inventarios['proveedor'].filter((a) => {
-          return (a.nombre.toLowerCase().indexOf(val.toLowerCase()) > -1) || (a.cedula.toLowerCase().indexOf(val.toLowerCase()) > -1);
-        })
-      }
-    }
-    if(this.inventarios['empleado']){
-      if (val && val.trim() != '') {
-        this.inventarios['empleado'] = this.inventarios['empleado'].filter((m) => {
-          return (m.nombre.toLowerCase().indexOf(val.toLowerCase()) > -1) || (m.cedula.toLowerCase().indexOf(val.toLowerCase()) > -1);
-        })
-      }
-    }
-    if(this.inventarios['cliente']){
-      if (val && val.trim() != '') {
-        this.inventarios['cliente'] = this.inventarios['cliente'].filter((n) => {
-          return (n.nombre.toLowerCase().indexOf(val.toLowerCase()) > -1) || (n.cedula.toLowerCase().indexOf(val.toLowerCase()) > -1);
+        this.ingresos = this.ingresos.filter((n) => {
+          return (n.nombre.toLowerCase().indexOf(val.toLowerCase()) > -1);
         })
       }
     }
@@ -94,16 +69,12 @@ export class IngresosPage implements OnInit {
   }
   actualiza(data){
     let este = this;
-    este.inventariost = {};
-    este.inventarios = {};
-    if(data.inventarios){
-      Object.keys(data.inventarios).map(function(i){
-        if(!este.inventarios[data.inventarios[i].rol]){
-          este.inventarios[data.inventarios[i].rol]=[];
-          este.inventariost[data.inventarios[i].rol]=[];
-        }
-        este.inventarios[data.inventarios[i].rol].push(data.inventarios[i]);
-        este.inventariost[data.inventarios[i].rol].push(data.inventarios[i]);
+    este.ingresost = [];
+    este.ingresos = [];
+    if(data.Documentos){
+      Object.keys(data.Documentos).map(function(i){
+        este.ingresos.push(data.Documentos[i]);
+        este.ingresost.push(data.Documentos[i]);
       });
     }
   }

@@ -1,0 +1,63 @@
+span{
+    color: var(--selected);
+    // font-weight: bold;
+}
+.welcome-card{
+margin: 0.75ch;
+}
+.col-card{
+width: 100%;
+flex: 0 0 auto;
+}
+.mov-t{
+display: block;
+// font-family: 'Tajawal', sans-serif;
+font-size: 1.7125ch;
+margin: 0.5ch 0 0 0;
+// width: 130%;
+}
+.mov{
+display: block;
+// font-family: 'Tajawal', sans-serif;
+font-size: 1.7125ch;
+margin: 0.5ch 0 0 0;
+width: 130%;
+}
+.data{
+display: block;
+font-size: 2.4ch;
+margin: 0.7ch 0 0 0;
+// font-family: "Eczar", serif;
+-webkit-transform: scaleY(1.2);
+transform: scaleY(1.2);
+letter-spacing: 0.175ch;
+}
+.icon-card{
+    display: block;
+    float: right;
+    margin: 50% 0 0 0;
+}
+.material-icons{
+    font-size: 3em !important;
+    color: var(--selected) !important;
+}
+.subtitulo{
+padding: 0 0 1ch 2ch;
+font-size: 1.62ch;
+}
+@media (min-width: 412px) {
+    .icon-card{
+        margin: 2vh 0 0 0;
+    }
+}
+@media (min-width: 640px) {
+    .col-card{
+        width: 50%;
+    }
+    .icon-card{
+        margin: 2vh 0 0 0;
+    }
+}
+ion-fab{
+z-index: 9;
+}

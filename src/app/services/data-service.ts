@@ -12,7 +12,7 @@ import { ReplaySubject } from 'rxjs';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
-import { LocalDatabase, Producto, Bodega, Inventario, Usuario } from '../models/data-models';
+import { LocalDatabase, Producto, Bodega, Inventario, Usuario, Documento, ListaDetallada } from '../models/data-models';
 import { dismiss } from '@ionic/core/dist/types/utils/overlays';
 
 @Injectable()
@@ -68,10 +68,16 @@ export class DataService {
                     this.decargaDatabase('bodegas').then(()=>{
                         este.decargaDatabase('productos').then(()=>{
                             este.decargaDatabase('usuarios').then(()=>{
-                                este.storage.set('database', JSON.stringify(este.database)).then(()=>{
-                                    console.log('Database:',este.database)
-                                    return
-                                })
+                                este.decargaDatabase('documentos').then(()=>{
+                                    este.decargaDatabase('listas').then(()=>{
+                                        este.decargaDatabase('inventario').then(()=>{
+                                            este.storage.set('database', JSON.stringify(este.database)).then(()=>{
+                                                console.log('Database:',este.database)
+                                                return
+                                            })
+                                        });
+                                    });
+                                });
                             });
                         });
                     })
@@ -103,11 +109,20 @@ export class DataService {
                         case 'usuarios':
                             modelo = new Usuario();
                             break;
+                        case 'documentos':
+                            modelo = new Documento();
+                            break;
+                        case 'listas':
+                            modelo = new ListaDetallada();
+                            break;
+                        case 'inventario':
+                            modelo = new Inventario();
+                            break;
                         default:
                             break;
                     }
                     este.database[campo][snapshot.key] = este.iteraModelo(modelo, snapshot.val());
-                    if(child != 'usuarios'){
+                    if((child == 'productos') || child == 'bodegas'){
                         este.download(este.database[campo][snapshot.key]).then(r=>{
                             // console.log(r)
                             este.database[campo][snapshot.key].imagen = r
@@ -159,6 +174,30 @@ export class DataService {
                 })
                 este.databaseEvents('Usuarios')
             }
+            if(data.Documentos){
+                este.database.Documentos = {}
+                Object.keys(data.Documentos).forEach(key=>{
+                    const modelo = new Documento;
+                    este.database.Documentos[key] = este.iteraModelo(modelo, data.Documentos[key]);
+                })
+                este.databaseEvents('Documentos')
+            }
+            if(data.Listas){
+                este.database.Listas = {}
+                Object.keys(data.Listas).forEach(key=>{
+                    const modelo = new ListaDetallada;
+                    este.database.Listas[key] = este.iteraModelo(modelo, data.Listas[key]);
+                })
+                este.databaseEvents('Listas')
+            }
+            if(data.Inventario){
+                este.database.Inventario = {}
+                Object.keys(data.Inventario).forEach(key=>{
+                    const modelo = new Inventario;
+                    este.database.Inventario[key] = este.iteraModelo(modelo, data.Inventario[key]);
+                })
+                este.databaseEvents('Inventario')
+            }
             return este.database
         }
         databaseEvents(campo:string){
@@ -184,6 +223,15 @@ export class DataService {
                     case 'Usuarios':
                         este.UsuariosObserver.next(este.database);
                         break
+                    case 'Inventario':
+                        este.InventarioObserver.next(este.database);
+                        break;
+                    case 'Documentos':
+                        este.InventarioObserver.next(este.database);
+                        break;
+                    case 'Listas':
+                        este.InventarioObserver.next(este.database);
+                        break;
                     default:
                         break;
                 }
@@ -191,7 +239,7 @@ export class DataService {
         }
         eventos(data:any,key,tipo:String,campo:string){
             let este = this;
-            console.log('Evento',tipo,campo,key,este.database[campo])
+            console.log('Evento',tipo,campo,key,este.database[campo],data)
             let modelo
             let observer
             switch (campo) {
@@ -203,14 +251,22 @@ export class DataService {
                     modelo = new Bodega();
                     observer = este.BodegaObserver
                     break;
-                case 'Inventario':
-                    modelo = new Inventario();
-                    observer = este.InventarioObserver
-                    break
                 case 'Usuarios':
                     modelo = new Usuario();
                     observer = este.UsuariosObserver
                     break
+                case 'Inventario':
+                    modelo = new Inventario();
+                    observer = este.InventarioObserver
+                    break
+                case 'Documentos':
+                    modelo = new Documento();
+                    observer = este.InventarioObserver
+                    break;
+                case 'Listas':
+                    modelo = new ListaDetallada();
+                    observer = este.InventarioObserver
+                    break;
                 default:
                     break;
             }
@@ -275,7 +331,7 @@ export class DataService {
                 })			
             );
         }
-    // ---- Productos | Bodegas | Usuarios ------------------------
+    // ---- Productos | Bodegas -----------------------------------
         async creaChild(formulario:any,imagen:any,accion:string,PushID:string,child:string) {
             let este = this
             const loading = await this.loadingController.create({
@@ -413,6 +469,7 @@ export class DataService {
                 })
             // ---------------------------------------------
         }
+    // ----  Usuarios ---------------------------------------------
         async CloudFunctionUsuarios(usuario,accion){
             let este = this;
             const loading = await this.loadingController.create({
@@ -452,6 +509,67 @@ export class DataService {
                 let titulo = 'Error'
                 let mensaje = error.message
                 este.presentAlert(titulo,mensaje)
+                return
+            })
+        }
+    // ---- Documentos --------------------------------------------
+        async creaIngreso(doc: Documento,listas: any){
+            let este = this;
+            const loading = await this.loadingController.create({
+                // message: 'Trabajando...',
+                spinner:"dots",
+                translucent: true,
+                cssClass: 'backRed'
+            });
+            await loading.present();
+            if(!this.database.Listas){
+                this.database.Listas = {}
+            }
+            if(!this.database.Documentos){
+                this.database.Documentos = {}
+            }
+            if(!this.database.Inventario){
+                this.database.Inventario = {}
+            }
+            this.database.Documentos[doc.key] = doc;
+            let index = ''
+            const data = {}
+            // 'documentos':d,
+            //     'listas':l
+            index = 'documentos/'+doc.key
+            data[index] = doc;
+            for(let i in listas){
+                this.database.Listas[i] = listas[i];
+                if(!this.database.Inventario[i]){
+                    this.database.Inventario[i] = new Inventario();
+                }
+                this.database.Inventario[i].bodega = listas[i].bodega;
+                this.database.Inventario[i].ingreso = listas[i].creacion;
+                this.database.Inventario[i].producto = listas[i].producto;
+                this.database.Inventario[i].tipo = 'producto';
+                this.database.Inventario[i].cantidad = listas[i].cantidad;
+                this.database.Inventario[i].precio = listas[i].precio;
+                this.database.Inventario[i].costo = listas[i].costo;
+                this.database.Inventario[i].proveedor = listas[i].proveedor;
+                this.database.Inventario[i].usuario = listas[i].usuario;
+                this.database.Inventario[i].documento = listas[i].documento;
+                index = 'listas/'+i
+                data[index] = listas[i];
+                index = 'inventario/'+i
+                data[index] = this.database.Inventario[i];
+            }
+            console.log(doc, listas, data)
+            await firebase.database().ref().update(data).then(async a=>{
+                await este.storage.set('database', JSON.stringify(este.database)).then(()=>{
+                    loading.dismiss()
+                    este.presentToastWithOptions('Documento ok',3000,'top')
+                    este.InventarioObserver.next(este.database)
+                    return true
+                })
+            }).catch(error=>{
+                loading.dismiss()
+                este.presentAlert('Error Doc',error)
+                console.error(error);
                 return
             })
         }

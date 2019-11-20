@@ -19,17 +19,9 @@
 </ion-header>
 
 <ion-content no-border>
-  <ion-row *ngIf="inventarios">
-    <ion-list-header *ngIf="inventarios['admin']">
-      <ion-label>Administradores</ion-label>
-    </ion-list-header>
-    <ion-col *ngFor="let d of inventarios['admin']">
-      <ion-item *ngIf="d.rol=='admin'" (click)="page(d,'editar')">
-        <ion-label>
-          <h2>{{d.nombre}}</h2>
-          <p>{{d.telefono}}</p>
-        </ion-label>
-      </ion-item>
+  <ion-row *ngIf="ingresos">
+    <ion-col *ngFor="let d of ingresos">
+      <documento [data]=d></documento>
     </ion-col>
   </ion-row>
 </ion-content>

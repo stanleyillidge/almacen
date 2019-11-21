@@ -92,34 +92,23 @@ export class CreateIngresoPage implements OnInit {
     }
   }
   creaFormularioVacio(){
-    let data = new Documento
-    data.key = ''
-    data.tipo = 'ingreso'
-    data.creacion = new Date()
-    data.estado = 'pendiente'
-    data.numProductos = 0
-    data.proveedor = ''
-    data.comprador = ''
-    data.usuario = ''
-    data['costo'] = 0;
-
     this.DocPushID = firebase.database().ref().push().key;
     if(!this.database.Documentos){
       this.database.Documentos = {};
     }
-    this.database.Documentos[this.DocPushID] = new Documento;
-    this.database.Documentos[this.DocPushID].key = this.DocPushID;
-    this.database.Documentos[this.DocPushID].creacion = new Date();
-    this.database.Documentos[this.DocPushID].tipo = 'ingreso';
-    this.database.Documentos[this.DocPushID].estado = 'pendiente';
-    this.database.Documentos[this.DocPushID].numProductos = 0;
-    this.database.Documentos[this.DocPushID].valor = 0;
-    this.database.Documentos[this.DocPushID].comprador = 'su empresa';
-    this.database.Documentos[this.DocPushID].usuario = 'usuario autenticado en la app'
-
-    // this.creaFormulario(data);
   }
   addProducto(){
+    if(!this.database.Documentos[this.DocPushID]){
+      this.database.Documentos[this.DocPushID] = new Documento;
+      this.database.Documentos[this.DocPushID].key = this.DocPushID;
+      this.database.Documentos[this.DocPushID].creacion = new Date();
+      this.database.Documentos[this.DocPushID].tipo = 'ingreso';
+      this.database.Documentos[this.DocPushID].estado = 'pendiente';
+      this.database.Documentos[this.DocPushID].numProductos = 0;
+      this.database.Documentos[this.DocPushID].valor = 0;
+      this.database.Documentos[this.DocPushID].comprador = 'su empresa';
+      this.database.Documentos[this.DocPushID].usuario = 'usuario autenticado en la app'
+    }
     const nombre = this.ProductoControl.value
     const proveedor = this.getKeyByValue(this.usuarios['proveedor'], this.ProveedoresControl.value,'nombre');
     this.database.Documentos[this.DocPushID].proveedor = proveedor;

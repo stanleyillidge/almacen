@@ -1,6 +1,15 @@
 form{
     text-align: center;
 }
+.num{
+    width: 40vw !important;
+}
+.num2{
+    width: 25vw !important;
+}
+.pro{
+    width: 55vw !important;
+}
 mat-form-field{
     width: 80vw;
 }
@@ -18,7 +27,7 @@ mat-form-field{
 }
 @media (min-width: 412px) { // vista web
     .titulo{
-        font-size: 3vw;
+        font-size: 2.5ch;
     }
 }
 .cant,.costo{

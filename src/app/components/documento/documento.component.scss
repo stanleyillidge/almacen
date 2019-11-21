@@ -10,16 +10,14 @@ width: 100%;
 flex: 0 0 auto;
 }
 .mov-t{
-display: block;
-// font-family: 'Tajawal', sans-serif;
-font-size: 1.7125ch;
-margin: 0.5ch 0 0 0;
-// width: 130%;
+    display: block;
+    font-size: large;
+    margin: 0.5ch 0 0 0;
 }
 .mov{
 display: block;
 // font-family: 'Tajawal', sans-serif;
-font-size: 1.7125ch;
+font-size: large;
 margin: 0.5ch 0 0 0;
 width: 130%;
 }
@@ -47,6 +45,11 @@ font-size: 1.62ch;
 }
 @media (min-width: 412px) {
     .icon-card{
+        margin: 3.25vh 0 0 0;
+    }
+}
+@media (min-width: 460px) {
+    .icon-card{
         margin: 2vh 0 0 0;
     }
 }
@@ -55,7 +58,7 @@ font-size: 1.62ch;
         width: 50%;
     }
     .icon-card{
-        margin: 2vh 0 0 0;
+        margin: 1vh 0 0 0;
     }
 }
 ion-fab{

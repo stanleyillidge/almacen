@@ -6,4 +6,13 @@
     top: 0.5em;
     color: white;
 }
+.col-card{
+    width: 100%;
+    flex: 0 0 auto;
+}
+@media (min-width: 640px) {
+    .col-card{
+        width: 50%;
+    }
+}
 // ------------------------

@@ -25,6 +25,7 @@ export class CreateIngresoPage implements OnInit {
 
   CantidadControl = new FormControl();
   costoControl = new FormControl();
+  estadoControl = new FormControl();
   
   newIngresoForm: FormGroup;
   accion:string;
@@ -107,8 +108,8 @@ export class CreateIngresoPage implements OnInit {
         this.lista[key]['nombre'] = this.database.Productos[i].nombre;
         this.listaProductos.unshift(this.lista[key]);
         this.ProductoControl.setValue('');
-        this.CantidadControl.setValue(0);
-        this.costoControl.setValue(0);
+        this.CantidadControl.setValue('');
+        this.costoControl.setValue('');
         console.log(this.database)
       }
     }
@@ -116,6 +117,7 @@ export class CreateIngresoPage implements OnInit {
   creaDocumento(){
     let este = this
     // console.log(this.database)
+    this.database.Documentos[this.DocPushID].estado = this.estadoControl.value;
     this.ds.creaIngreso(this.database.Documentos[this.DocPushID],this.lista).then(a=>{
       este.navCtrl.pop()
     })

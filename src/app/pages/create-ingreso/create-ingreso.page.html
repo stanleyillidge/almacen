@@ -18,8 +18,8 @@
       <!-- <mat-hint>Nombre del proveedor</mat-hint> -->
     </mat-form-field>
   </div>
-  <div class="parent">
-    <mat-form-field class="example-full-width">
+  <ion-col style="padding: 0 0 0 10vw;" warp>
+    <mat-form-field class="pro">
       <mat-label>Productos</mat-label>
       <input type="text" aria-label="Number" matInput [formControl]="ProductoControl" [matAutocomplete]="auto2">
       <mat-autocomplete #auto2="matAutocomplete">
@@ -30,19 +30,29 @@
       <!-- <mat-icon matSuffix>add_box</mat-icon> -->
       <!-- <mat-hint>Nombre del proveedor</mat-hint> -->
     </mat-form-field>
-  </div>
-  <div class="parent">
-    <mat-form-field class="example-full-width">
+  </ion-col>
+  <ion-col warp>
+    <mat-form-field class="num2">
       <input matInput [formControl]="CantidadControl" #cantidad maxlength="5" placeholder="Cantidad">
       <!-- <mat-hint align="end">{{postalCode.value.length}} / 5</mat-hint> -->
     </mat-form-field>
-  </div>
-  <div class="parent">
-    <mat-form-field class="example-full-width">
+  </ion-col>
+  <ion-col style="padding: 0 0 0 10vw;" warp>
+    <mat-form-field class="num">
       <input matInput [formControl]="costoControl" #costo maxlength="7" placeholder="Costo">
       <!-- <mat-hint align="end">{{postalCode.value.length}} / 5</mat-hint> -->
     </mat-form-field>
-  </div>
+  </ion-col>
+  <ion-col warp>
+    <mat-form-field class="num">
+      <mat-label>Estado</mat-label>
+      <mat-select [formControl]="estadoControl">
+        <mat-option value="pagado">Pagado</mat-option>
+        <mat-option value="pendiente">Pendiente</mat-option>
+        <mat-option value="anulado">Anulado</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </ion-col>
   <ion-title class="titulo">Items: {{listaProductos.length | number}} - Unids: {{total['unid'] | number}}</ion-title>
   <ion-title class="titulo">Total: $ {{total['costo'] | number}}</ion-title>
   <ion-fab vertical="bottom" horizontal="end">

@@ -38,6 +38,7 @@ export class CreateIngresoPage implements OnInit {
   DocPushID: string;
   lista: {};
   disabled:boolean = false;
+  documento: any;
   constructor(
     public navCtrl: NavController,
     public fb: FormBuilder,
@@ -47,6 +48,7 @@ export class CreateIngresoPage implements OnInit {
     this.database = this.ds.Database
     this.total = {};
     this.lista = {};
+    this.documento = {};
     this.total['costo'] = 0;
     this.total['unid'] = 0;
     this.listaProductos = [];
@@ -93,26 +95,23 @@ export class CreateIngresoPage implements OnInit {
   }
   creaFormularioVacio(){
     this.DocPushID = firebase.database().ref().push().key;
-    if(!this.database.Documentos){
-      this.database.Documentos = {};
-    }
   }
   addProducto(){
-    if(!this.database.Documentos[this.DocPushID]){
-      this.database.Documentos[this.DocPushID] = new Documento;
-      this.database.Documentos[this.DocPushID].key = this.DocPushID;
-      this.database.Documentos[this.DocPushID].creacion = new Date();
-      this.database.Documentos[this.DocPushID].tipo = 'ingreso';
-      this.database.Documentos[this.DocPushID].estado = 'pendiente';
-      this.database.Documentos[this.DocPushID].numProductos = 0;
-      this.database.Documentos[this.DocPushID].valor = 0;
-      this.database.Documentos[this.DocPushID].comprador = 'su empresa';
-      this.database.Documentos[this.DocPushID].usuario = 'usuario autenticado en la app'
+    if(!this.documento[this.DocPushID]){
+      this.documento[this.DocPushID] = new Documento;
+      this.documento[this.DocPushID].key = this.DocPushID;
+      this.documento[this.DocPushID].creacion = new Date();
+      this.documento[this.DocPushID].tipo = 'ingreso';
+      this.documento[this.DocPushID].estado = 'pendiente';
+      this.documento[this.DocPushID].numProductos = 0;
+      this.documento[this.DocPushID].valor = 0;
+      this.documento[this.DocPushID].comprador = 'su empresa';
+      this.documento[this.DocPushID].usuario = 'usuario autenticado en la app'
     }
     const nombre = this.ProductoControl.value
     const proveedor = this.getKeyByValue(this.usuarios['proveedor'], this.ProveedoresControl.value,'nombre');
-    this.database.Documentos[this.DocPushID].proveedor = proveedor;
-    this.database.Documentos[this.DocPushID].estado = this.estadoControl.value;
+    this.documento[this.DocPushID].proveedor = proveedor;
+    this.documento[this.DocPushID].estado = this.estadoControl.value;
     const cantidades = this.CantidadControl.value
     const costo = this.costoControl.value
     const key = firebase.database().ref().push().key;
@@ -121,11 +120,11 @@ export class CreateIngresoPage implements OnInit {
       if(this.database.Productos[i].nombre == nombre){
         this.total['costo'] += (Number(costo) * Number(cantidades))
         this.total['unid'] += Number(cantidades);
-        this.database.Documentos[this.DocPushID].valor = this.total['costo'];
-        this.database.Documentos[this.DocPushID].numProductos = this.total['unid'];
+        this.documento[this.DocPushID].valor = this.total['costo'];
+        this.documento[this.DocPushID].numProductos = this.total['unid'];
         this.lista[key].key = key;
-        this.lista[key].tipo = this.database.Documentos[this.DocPushID].tipo;
-        this.lista[key].creacion = this.database.Documentos[this.DocPushID].creacion;
+        this.lista[key].tipo = this.documento[this.DocPushID].tipo;
+        this.lista[key].creacion = this.documento[this.DocPushID].creacion;
         this.lista[key].bodega = 'por definir'
         this.lista[key].documento = this.DocPushID;
         this.lista[key].proveedor = proveedor
@@ -150,7 +149,7 @@ export class CreateIngresoPage implements OnInit {
     // console.log(this.database)
     if(this.listaProductos.length>0){
       if(this.ProveedoresControl.value != ''){
-        this.ds.creaIngreso(this.database.Documentos[this.DocPushID],this.lista).then(a=>{
+        this.ds.creaIngreso(this.documento[this.DocPushID],this.lista).then(a=>{
           este.navCtrl.pop()
         })
       }else{

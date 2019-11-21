@@ -3,18 +3,31 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-buttons slot="end">
-      <ion-icon class="buscar-top" name="search"></ion-icon>
-    </ion-buttons>
-    <ion-title>Salidas</ion-title>
+    <ion-row class="ion-align-items-center">
+      <ion-title *ngIf="!searchTest">Ventas</ion-title>
+      <ion-col class="ion-align-items-center ion-no-padding" *ngIf="searchTest" size="12">
+        <ion-searchbar
+          #autofocus
+          (ionChange)="onInput($event)"
+          (ionBlur)="onBlur($event)"
+          color="dark">
+        </ion-searchbar>
+      </ion-col>
+      <ion-icon class="sb" *ngIf="!searchTest" (click)="click()" name="search"></ion-icon>
+    </ion-row>
   </ion-toolbar>
 </ion-header>
 
 <ion-content no-border>
+  <ion-row *ngIf="ingresos" wrap>
+    <ion-col class="col-card" *ngFor="let d of ingresos">
+      <documento [data]=d></documento>
+    </ion-col>
+  </ion-row>
 </ion-content>
 <ion-button class="almacen-button derecho">
   <ion-icon name="barcode"></ion-icon>
 </ion-button>
-<ion-button class="almacen-button izquierdo">
+<ion-button class="almacen-button izquierdo" (click)="page('venta','','crear')">
   <ion-icon name="add-circle"></ion-icon>
 </ion-button>

@@ -4,7 +4,7 @@
       <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-row class="ion-align-items-center">
-      <ion-title *ngIf="!searchTest">Ingresos</ion-title>
+      <ion-title *ngIf="!searchTest">Compras</ion-title>
       <ion-col class="ion-align-items-center ion-no-padding" *ngIf="searchTest" size="12">
         <ion-searchbar
           #autofocus
@@ -28,6 +28,6 @@
 <ion-button class="almacen-button derecho">
   <ion-icon name="barcode"></ion-icon>
 </ion-button>
-<ion-button class="almacen-button izquierdo" (click)="page('','crear')">
+<ion-button class="almacen-button izquierdo" (click)="page('compra','','crear')">
   <ion-icon name="add-circle"></ion-icon>
 </ion-button>

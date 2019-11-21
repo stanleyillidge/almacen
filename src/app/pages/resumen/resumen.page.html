@@ -12,4 +12,15 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content></ion-content>
+<ion-content>
+  <mat-form-field>
+    <mat-label>Tipo de resumen</mat-label>
+    <mat-select matNativeControl required>
+      <mat-option value="volvo">Genearl por fecha</mat-option>
+      <mat-option value="saab">Por bodega</mat-option>
+      <mat-option value="mercedes">Por empleado</mat-option>
+      <mat-option value="audi">Por proveedor</mat-option>
+      <mat-option value="audi">Por cliente</mat-option>
+    </mat-select>
+  </mat-form-field>
+</ion-content>

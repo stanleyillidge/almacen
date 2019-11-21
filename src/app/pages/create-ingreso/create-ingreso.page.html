@@ -3,21 +3,29 @@
     <ion-buttons slot="start">
       <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title>Ingreso al inventario</ion-title>
+    <ion-title>Documento de {{mov}}</ion-title>
   </ion-toolbar>
-  <div style="margin: 0 0 -1em 0;" class="parent">
-    <mat-form-field class="example-full-width" appearance="outline">
-      <mat-label>Proveedor</mat-label>
+  <ion-col style="padding: 0 0 0 10vw;" warp>
+    <mat-form-field class="pro">
+      <mat-label>{{TipoUsuario}}</mat-label>
       <input type="text" placeholder="Elija uno" aria-label="Number" matInput [formControl]="ProveedoresControl" [matAutocomplete]="auto">
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let proveedores of filteredProveedores | async" [value]="proveedores">
           {{proveedores}}
         </mat-option>
       </mat-autocomplete>
-      <!-- <mat-icon matSuffix>sentiment_very_satisfied</mat-icon> -->
-      <!-- <mat-hint>Nombre del proveedor</mat-hint> -->
     </mat-form-field>
-  </div>
+  </ion-col>
+  <ion-col warp>
+    <mat-form-field class="num2">
+      <mat-label>Estado</mat-label>
+      <mat-select [(value)]="estadoControl.value" [formControl]="estadoControl">
+        <mat-option value="pagado">Pagado</mat-option>
+        <mat-option value="pendiente">Pendiente</mat-option>
+        <mat-option value="anulado">Anulado</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </ion-col>
   <ion-col style="padding: 0 0 0 10vw;" warp>
     <mat-form-field class="pro">
       <mat-label>Productos</mat-label>
@@ -27,30 +35,27 @@
           {{productos}}
         </mat-option>
       </mat-autocomplete>
-      <!-- <mat-icon matSuffix>add_box</mat-icon> -->
-      <!-- <mat-hint>Nombre del proveedor</mat-hint> -->
     </mat-form-field>
   </ion-col>
   <ion-col warp>
     <mat-form-field class="num2">
       <input matInput [formControl]="CantidadControl" #cantidad maxlength="5" placeholder="Cantidad">
-      <!-- <mat-hint align="end">{{postalCode.value.length}} / 5</mat-hint> -->
     </mat-form-field>
   </ion-col>
   <ion-col style="padding: 0 0 0 10vw;" warp>
-    <mat-form-field class="num">
+    <mat-form-field class="num2">
       <input matInput [formControl]="costoControl" #costo maxlength="7" placeholder="Costo">
-      <!-- <mat-hint align="end">{{postalCode.value.length}} / 5</mat-hint> -->
     </mat-form-field>
   </ion-col>
   <ion-col warp>
-    <mat-form-field class="num">
-      <mat-label>Estado</mat-label>
-      <mat-select [(value)]="estadoControl.value" [formControl]="estadoControl">
-        <mat-option value="pagado">Pagado</mat-option>
-        <mat-option value="pendiente">Pendiente</mat-option>
-        <mat-option value="anulado">Anulado</mat-option>
-      </mat-select>
+    <mat-form-field class="pro">
+      <mat-label>Bodegas</mat-label>
+      <input type="text" aria-label="Number" matInput [formControl]="BodegasControl" [matAutocomplete]="auto3">
+      <mat-autocomplete #auto3="matAutocomplete">
+        <mat-option *ngFor="let Bodegas of filteredBodegas | async" [value]="Bodegas">
+          {{Bodegas}}
+        </mat-option>
+      </mat-autocomplete>
     </mat-form-field>
   </ion-col>
   <ion-title class="titulo">Items: {{listaProductos.length | number}} - Unids: {{total['unid'] | number}}</ion-title>
@@ -62,7 +67,7 @@
   </ion-fab>
 </ion-header>
 
-<ion-content class="ion-padding" no-border>
+<ion-content class = "ion-padding" no-border>
   <!-- listaProductos -->
   <div class="ion-padding" *ngIf="listaProductos">
     <ion-item-sliding *ngFor="let d of listaProductos">
@@ -86,7 +91,7 @@
       </ion-item>
 
       <ion-item-options side="start">
-        <ion-item-option>Editar</ion-item-option>
+        <ion-item-option (click)="editar(d)">Editar</ion-item-option>
       </ion-item-options>
 
       <ion-item-options side="end">
@@ -96,22 +101,9 @@
   </div>
 </ion-content>
 
-
-
-<!-- <ion-button
-class="almacen-button izquierdo"
-(click)="navCtrl.pop()">
-  <ion-icon name="remove-circle"></ion-icon>
-</ion-button> -->
-
 <ion-button
-[disabled]=disabled
-class="almacen-button derecho"
-(click)="creaDocumento()">
-  <!-- <ion-icon name="add-circle"></ion-icon> -->
-  <!-- <ion-icon name="checkbox-outline"></ion-icon> -->
-  <ion-icon name="checkbox"></ion-icon>
-  <!-- <i class="material-icons">
-      move_to_inbox
-      </i> -->
+[disabled] = disabled
+class = "almacen-button derecho"
+(click) = "creaDocumento()">
+  <ion-icon name = "checkbox"></ion-icon>
 </ion-button>

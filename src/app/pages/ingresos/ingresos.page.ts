@@ -53,14 +53,14 @@ export class IngresosPage implements OnInit {
   public onBlur(ev:any): void {
     this.searchTest = !this.searchTest;
   }
-  page(data:any,accion:string){
+  page(mov:string,data:any,accion:string){
     let page = 'create-ingreso'
     console.log(accion,data)
     if(data == ''){
       data = {}
       data.key = ''
     }
-    this.navCtrl.navigateForward([page,{accion:accion,key:data.key}]);
+    this.navCtrl.navigateForward([page,{mov:mov,accion:accion,key:data.key}]);
   }
   ngOnInit() {
     this.database = this.ds.Database;
@@ -73,8 +73,10 @@ export class IngresosPage implements OnInit {
     este.ingresos = [];
     if(data.Documentos){
       Object.keys(data.Documentos).map(function(i){
-        este.ingresos.push(data.Documentos[i]);
-        este.ingresost.push(data.Documentos[i]);
+        if(data.Documentos[i].tipo == 'compra'){
+          este.ingresos.push(data.Documentos[i]);
+          este.ingresost.push(data.Documentos[i]);
+        }
       });
     }
   }

@@ -92,7 +92,7 @@
     }
     export class Documento{
         public key: string // PushID del documento
-            public tipo: 'ingreso' | 'salida' | 'traslado' | 'notaDebito' | 'notaCredito'
+            public tipo: 'compra' | 'venta' | 'traslado' | 'notaDebito' | 'notaCredito'
             public creacion: Date
             public estado: 'pagado' | 'pendiente' | 'anulado'
             public numProductos: number // Numero total de productos relacionados en el documento
@@ -102,7 +102,7 @@
             public valor: number // monto total de todos los productos relacionnados en el documentos
         constructor() {
             if(!this.tipo){
-                this.tipo = 'ingreso'
+                this.tipo = 'compra'
             }
             if(!this.creacion){
                 this.creacion = new Date

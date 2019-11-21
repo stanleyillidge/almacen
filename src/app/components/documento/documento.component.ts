@@ -34,13 +34,17 @@ export class DocumentoComponent implements OnInit {
     this.fecha['m'] = meses[d.getMonth()];
     this.fecha['a'] = d.getFullYear();
     this.fecha['f'] = new Date(this.data.creacion).toDateString();
-    this.nombre = this.ds.capitalize(this.ds.Database.Usuarios[this.data.proveedor].nombre)
+    if(this.data.tipo == 'compra'){
+      this.nombre = this.ds.capitalize(this.ds.Database.Usuarios[this.data.proveedor].nombre)
+    }else if(this.data.tipo == 'venta'){
+      this.nombre = this.ds.capitalize(this.ds.Database.Usuarios[this.data.comprador].nombre)
+    }
     this.estado = this.ds.capitalize(this.data.estado);
     switch (this.data.tipo) {
-      case 'ingreso':
+      case 'compra':
         this.icono = 'archive'
         break;
-      case 'salida':
+      case 'venta':
         this.icono = 'unarchive'
         break;
       case 'traslado':

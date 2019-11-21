@@ -24,11 +24,9 @@ mat-form-field{
 .titulo{
     margin: 0 0 0.5em 1em;
     font-size: 5.6vw;
-}
-@media (min-width: 412px) { // vista web
-    .titulo{
-        font-size: 2.5ch;
-    }
+    transform: scaleY(1.2);
+    letter-spacing: 0.175ch;
+    font-weight: 100;
 }
 .cant,.costo{
     font-size: 6vw;
@@ -62,4 +60,15 @@ ion-item{
     justify-content: center;
     align-items: center;
     flex-direction: column;
+}
+@media (min-width: 412px) { // vista web
+    .titulo{
+        font-size: 1.7ch;
+    }
+    .unid,.nombre{
+        font-size: 1.7ch;
+    }
+    .cant,.costo{
+        font-size: 1.7ch;
+    }
 }

@@ -125,6 +125,9 @@
             if(!this.valor){
                 this.valor = 0
             }
+            if(!this.key){
+                this.key = ''
+            }
         }
     }
     export class ListaDetallada {
@@ -184,6 +187,9 @@
             }
             if(!this.cantidad){
                 this.cantidad = 0
+            }
+            if(!this.key){
+                this.key = ''
             }
         }
         get Total(){
@@ -313,6 +319,9 @@
             }
             if(!this.documento){
                 this.documento = ''
+            }
+            if(!this.key){
+                this.key = ''
             }
         }
     }

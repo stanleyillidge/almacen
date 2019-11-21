@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { DataService } from 'src/app/services/data-service';
 import { LocalDatabase } from 'src/app/models/data-models';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'documento',
@@ -15,8 +16,10 @@ export class DocumentoComponent implements OnInit {
   fecha: {};
   database: LocalDatabase;
   nombre: any;
+  estado: string;
 
   constructor(
+    public navCtrl: NavController,
     public ds:  DataService
   ) { }
 
@@ -32,7 +35,7 @@ export class DocumentoComponent implements OnInit {
     this.fecha['a'] = d.getFullYear();
     this.fecha['f'] = new Date(this.data.creacion).toDateString();
     this.nombre = this.ds.capitalize(this.ds.Database.Usuarios[this.data.proveedor].nombre)
-    this.data.estado = this.ds.capitalize(this.data.estado);
+    this.estado = this.ds.capitalize(this.data.estado);
     switch (this.data.tipo) {
       case 'ingreso':
         this.icono = 'archive'
@@ -54,5 +57,9 @@ export class DocumentoComponent implements OnInit {
         break;
     }
   }
-
+  page(data){
+    let page = 'create-ingreso'
+    console.log('edita',data)
+    this.navCtrl.navigateForward([page,{accion:'editar',key:data.key}]);
+  }
 }

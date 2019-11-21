@@ -82,7 +82,8 @@
 // .dark-theme {
 @import url('https://fonts.googleapis.com/css?family=Varela&display=swap');
 :root{
-  --ion-font-family: 'Varela', sans-serif;;
+  --ion-default-font: 'Varela', sans-serif !important;
+  --ion-font-family: 'Varela', sans-serif !important;
   --selected: #ffd740;//#fbb26a;//#dda976;
   --items: #3b4550;//#1e304c;
 

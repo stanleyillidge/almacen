@@ -97,7 +97,12 @@ export class CreateIngresoPage implements OnInit {
     this.dataEdit = data;
     this.disabled = false;
     this.estadoControl.enable();
-    const proveedor = this.database.Usuarios[data.proveedor].nombre
+    let proveedor
+    if(this.mov == 'compra'){
+      proveedor = this.database.Usuarios[data.proveedor].nombre
+    }else{
+      proveedor = this.database.Usuarios[data.comprador].nombre
+    }
     const producto = this.database.Productos[data.producto].nombre
     this.ProveedoresControl = new FormControl({value: proveedor, disabled: false});
     this.ProductoControl = new FormControl({value: producto, disabled: false});

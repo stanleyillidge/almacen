@@ -64,6 +64,6 @@ export class DocumentoComponent implements OnInit {
   page(data){
     let page = 'create-ingreso'
     console.log('edita',data)
-    this.navCtrl.navigateForward([page,{accion:'editar',key:data.key}]);
+    this.navCtrl.navigateForward([page,{mov:data.tipo,accion:'editar',key:data.key}]);
   }
 }

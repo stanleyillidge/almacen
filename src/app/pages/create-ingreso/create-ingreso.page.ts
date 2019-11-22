@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { NavController, AlertController } from '@ionic/angular';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services/data-service';
@@ -46,9 +46,11 @@ export class CreateIngresoPage implements OnInit {
   dataEdit: any;
   mov: string;
   TipoUsuario: string;
+  disabledfab: boolean = false;
   
   constructor(
     public navCtrl: NavController,
+    public alertController: AlertController,
     public fb: FormBuilder,
     public route: ActivatedRoute,
     public ds:  DataService
@@ -111,9 +113,25 @@ export class CreateIngresoPage implements OnInit {
     this.BodegasControl = new FormControl({value: data.bodega, disabled: false});
     this.actualiza(this.database)
   }
+  borrar(data){
+    console.log(data)
+    for(let i in this.listaProductos){
+      if(data.Total == this.listaProductos[i].Total){
+        this.listaProductos.splice(i, 1);
+        delete this.lista[data.key]
+        this.total['costo'] -= data.Total
+        this.total['unid'] -= data.cantidad;
+        this.documento[this.DocPushID].valor = this.total['costo'];
+        this.documento[this.DocPushID].numProductos = this.total['unid'];
+        console.log(this.lista)
+      }
+    }
+  }
   creaFormulario(data:Documento){
     console.log(data)
     this.disabled = true;
+    this.disabledfab = true;
+    this.DocPushID = data.key;
     let proveedor
     if(this.mov == 'compra'){
       proveedor = this.database.Usuarios[data.proveedor].nombre
@@ -126,7 +144,7 @@ export class CreateIngresoPage implements OnInit {
     this.costoControl = new FormControl({value: '', disabled: true});
     this.BodegasControl = new FormControl({value: '', disabled: true});
     this.estadoControl.setValue(data.estado);
-    this.estadoControl.disable();
+    // this.estadoControl.disable();
     for(let i in this.database.Listas){
       if(this.database.Listas[i].documento == data.key){
         this.listaProductos.unshift(this.database.Listas[i]);
@@ -231,19 +249,56 @@ export class CreateIngresoPage implements OnInit {
       }
     }
   }
-  creaDocumento(){
+  async creaDocumento(){
     let este = this
-    // console.log(this.database)
-    if(this.listaProductos.length>0){
-      if(this.ProveedoresControl.value != ''){
-        this.ds.creaIngreso(this.documento[this.DocPushID],this.lista).then(a=>{
-          este.navCtrl.pop()
-        })
+    console.log(this.accion,this.estadoControl.value)
+    if(this.accion == 'crear'){
+      if(this.listaProductos.length>0){
+        if(this.ProveedoresControl.value != ''){
+          this.ds.creaIngreso(this.documento[this.DocPushID],this.lista).then(a=>{
+            este.navCtrl.pop()
+          })
+        }else{
+          this.ds.presentAlert('Error','debes elegir un proveedor y anexar producutos')
+        }
       }else{
         this.ds.presentAlert('Error','debes elegir un proveedor y anexar producutos')
       }
-    }else{
-      this.ds.presentAlert('Error','debes elegir un proveedor y anexar producutos')
+    }else if(this.accion == 'editar' && (this.estadoControl.value == 'anulado')){
+      this.documento[this.DocPushID] = this.database.Documentos[this.DocPushID]
+      this.documento[this.DocPushID].estado = 'anulado'
+      this.documento[this.DocPushID].observacion = ''
+      const alert = await this.alertController.create({
+        header: 'Observacion!',
+        inputs: [
+          {
+            name: 'observacion',
+            type: 'text',
+            placeholder: 'Observacion'
+          }
+        ],
+        buttons: [
+          {
+            text: 'Cancelar',
+            role: 'cancel',
+            cssClass: 'secondary',
+            handler: () => {
+              console.log('Crear Cancel');
+            }
+          }, {
+            text: 'Ok',
+            handler: (d) => {
+              this.documento[this.DocPushID].observacion = d.observacion
+            }
+          }
+        ]
+      });
+      await alert.present();
+    }
+  }
+  onClick(){
+    if(this.accion == 'editar' && (this.estadoControl.value == 'anulado')){
+      this.disabledfab = false;
     }
   }
   ngOnInit(){}

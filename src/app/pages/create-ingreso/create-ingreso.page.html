@@ -19,7 +19,7 @@
   <ion-col warp>
     <mat-form-field class="num2">
       <mat-label>Estado</mat-label>
-      <mat-select [(value)]="estadoControl.value" [formControl]="estadoControl">
+      <mat-select [value]="estadoControl.value" (selectionChange)="onClick()" [formControl]="estadoControl">
         <mat-option value="pagado">Pagado</mat-option>
         <mat-option value="pendiente">Pendiente</mat-option>
         <mat-option value="anulado">Anulado</mat-option>
@@ -90,19 +90,23 @@
         </ion-col>
       </ion-item>
 
-      <ion-item-options side="start">
+      <!-- <ion-item-options side="start">
         <ion-item-option (click)="editar(d)">Editar</ion-item-option>
-      </ion-item-options>
+      </ion-item-options> -->
 
       <ion-item-options side="end">
-        <ion-item-option color="danger">Borrar</ion-item-option>
+        <ion-item-option
+        [disabled] = disabled
+        color="danger"
+        (click)="borrar(d)">Borrar</ion-item-option>
       </ion-item-options>
+
     </ion-item-sliding>
   </div>
 </ion-content>
 
 <ion-button
-[disabled] = disabled
+[disabled] = disabledfab
 class = "almacen-button derecho"
 (click) = "creaDocumento()">
   <ion-icon name = "checkbox"></ion-icon>

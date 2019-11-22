@@ -74,8 +74,8 @@ export class SalidasPage implements OnInit {
     if(data.Documentos){
       Object.keys(data.Documentos).map(function(i){
         if(data.Documentos[i].tipo == 'venta'){
-          este.ingresos.push(data.Documentos[i]);
-          este.ingresost.push(data.Documentos[i]);
+          este.ingresos.unshift(data.Documentos[i]);
+          este.ingresost.unshift(data.Documentos[i]);
         }
       });
     }

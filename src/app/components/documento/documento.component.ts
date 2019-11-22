@@ -13,7 +13,7 @@ export class DocumentoComponent implements OnInit {
   @Input('data') data;
   icono: string;
   valor: number;
-  fecha: {};
+  fecha: {ds:string,d:number,m:string,a:number,f:string};
   database: LocalDatabase;
   nombre: any;
   estado: string;
@@ -28,12 +28,13 @@ export class DocumentoComponent implements OnInit {
     let d = new Date(this.data.creacion);
     const dias = ["Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sabado"];
     const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Sept", "Octubre", "Nov", "Dec"];
-    this.fecha = {}
-    this.fecha['ds'] = dias[d.getDay()];
-    this.fecha['d'] = d.getDate();
-    this.fecha['m'] = meses[d.getMonth()];
-    this.fecha['a'] = d.getFullYear();
-    this.fecha['f'] = new Date(this.data.creacion).toDateString();
+    this.fecha = {
+      ds: dias[d.getDay()],
+      d: d.getDate(),
+      m: meses[d.getMonth()],
+      a: d.getFullYear(),
+      f: new Date(this.data.creacion).toDateString()
+    }
     if(this.data.tipo == 'compra'){
       this.nombre = this.ds.capitalize(this.ds.Database.Usuarios[this.data.proveedor].nombre)
     }else if(this.data.tipo == 'venta'){

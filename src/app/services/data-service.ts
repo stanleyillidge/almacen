@@ -469,7 +469,7 @@ export class DataService {
                 })
             // ---------------------------------------------
         }
-    // ----  Usuarios ---------------------------------------------
+    // ---- Usuarios ----------------------------------------------
         async CloudFunctionUsuarios(usuario,accion){
             let este = this;
             const loading = await this.loadingController.create({
@@ -569,6 +569,32 @@ export class DataService {
             }).catch(error=>{
                 loading.dismiss()
                 este.presentAlert('Error Doc',error)
+                console.error(error);
+                return
+            })
+        }
+        async actualizaDoc(doc:Documento){
+            let este = this;
+            const loading = await this.loadingController.create({
+                // message: 'Trabajando...',
+                spinner:"dots",
+                translucent: true,
+                cssClass: 'backRed'
+            });
+            await loading.present();
+            doc.modificacion = new Date();
+            this.database.Documentos[doc.key] = doc;
+            await firebase.database().ref('documentos/').child(doc.key)
+            .update(doc).then(async a=>{
+                await este.storage.set('database', JSON.stringify(este.database)).then(()=>{
+                    loading.dismiss()
+                    este.presentToastWithOptions('Documento actualizado',3000,'top')
+                    este.InventarioObserver.next(este.database)
+                    return true
+                })
+            }).catch(error=>{
+                loading.dismiss()
+                este.presentAlert('Error actualiza Doc',error)
                 console.error(error);
                 return
             })

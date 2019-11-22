@@ -95,6 +95,8 @@
             public tipo: 'compra' | 'venta' | 'traslado' | 'notaDebito' | 'notaCredito'
             public creacion: Date
             public estado: 'pagado' | 'pendiente' | 'anulado'
+            public modificacion: Date | null
+            public observacion: string | null
             public numProductos: number // Numero total de productos relacionados en el documento
             public proveedor: string // PushID del proveedor
             public comprador: string // PushID del comprador al que va dirigida
@@ -128,12 +130,16 @@
             if(!this.key){
                 this.key = ''
             }
+            if(!this.modificacion){
+                this.modificacion = null
+                this.observacion = null
+            }
         }
     }
     export class ListaDetallada {
         // se incluiran los productos uno a uno con un PushID para cada ingreso
         public key: string // PushID del producto en la lista
-            public tipo: 'ingreso' | 'salida' | 'traslado' | 'notaDebito' | 'notaCredito'
+            public tipo: 'compra' | 'venta' | 'traslado' | 'notaDebito' | 'notaCredito'
             public creacion: Date
             public nombre: string // nombre del producto
             public bodega: string // PushID de la bodega
@@ -147,9 +153,9 @@
             public descuento: number // porcentaje de descuento unitario otorgado por el vendedor // campo heredado del Producto
             public cantidad: number // cantidad total de productos de la misma denominación
         constructor() {
-            if (this.tipo =='ingreso') {
+            if (this.tipo == 'compra') {
                     this.costo = 0
-                }else if (this.tipo =='salida') {
+                }else if (this.tipo == 'venta') {
                     this.precio = 0
             }
             if(!this.creacion){
@@ -193,9 +199,9 @@
             }
         }
         get Total(){
-            if (this.tipo =='ingreso') {
+            if (this.tipo =='compra') {
                 return (this.costo * (1 - this.descuento) * this.cantidad)
-            }else{
+            }else if (this.tipo =='venta'){
                 return (this.precio * (1 - this.descuento) * this.cantidad)
             }
         }

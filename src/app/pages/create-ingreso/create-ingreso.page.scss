@@ -13,6 +13,9 @@ form{
 mat-form-field{
     width: 80vw;
 }
+.abono{
+    --background: var(--success);
+}
 .add{
     --background: var(--selected);
     --background-hover: #FF9800;

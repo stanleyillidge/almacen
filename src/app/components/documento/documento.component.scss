@@ -1,47 +1,57 @@
 span{
     color: var(--selected);
     // font-weight: bold;
+    font-size: 1.86ch;
 }
 .welcome-card{
-margin: 0.75ch;
+    margin: 0.75ch;
 }
 .col-card{
-width: 100%;
-flex: 0 0 auto;
+    width: 100%;
+    flex: 0 0 auto;
 }
 .mov-t{
     display: block;
-    font-size: large;
-    margin: 0.5ch 0 0 0;
+    font-size: 1.86ch;
+    margin: 0.5ch 0 0.5ch 0;
 }
 .mov{
-display: block;
-// font-family: 'Tajawal', sans-serif;
-font-size: large;
-margin: 0.5ch 0 0 0;
-width: 130%;
+    display: block;
+    // font-family: 'Tajawal', sans-serif;
+    font-size: large;
+    margin: 0.5ch 0 0 0;
+    width: 130%;
 }
 .data{
-display: block;
-font-size: 2.4ch;
-margin: 0.7ch 0 0 0;
-// font-family: "Eczar", serif;
--webkit-transform: scaleY(1.2);
-transform: scaleY(1.2);
-letter-spacing: 0.175ch;
+    display: block;
+    font-size: 2.4ch;
+    margin: 0.5ch 0 0 0;
+    // font-family: "Eczar", serif;
+    -webkit-transform: scaleY(1.2);
+    transform: scaleY(1.2);
+    letter-spacing: 0.175ch;
 }
 .icon-card{
     display: block;
     float: right;
     margin: 50% 0 0 0;
 }
-.material-icons{
-    font-size: 3em !important;
+.icono .material-icons{
+    font-size: 4em !important;
+    color: var(--selected);
+}
+.pagado{
+    color: var(--success) !important;
+}
+.pendiente{
     color: var(--selected) !important;
 }
+.anulado{
+    color: var(--danger) !important;
+}
 .subtitulo{
-padding: 0 0 1ch 2ch;
-font-size: 1.62ch;
+    padding: 0 0 1ch 2ch;
+    font-size: 1.62ch;
 }
 @media (min-width: 412px) {
     .icon-card{
@@ -62,5 +72,5 @@ font-size: 1.62ch;
     }
 }
 ion-fab{
-z-index: 9;
+    z-index: 9;
 }

@@ -61,7 +61,7 @@
   <ion-title class="titulo">Items: {{listaProductos.length | number}} - Unids: {{total['unid'] | number}}</ion-title>
   <ion-title class="titulo">Total: $ {{total['costo'] | number}}</ion-title>
   <ion-fab vertical="bottom" horizontal="end">
-    <ion-fab-button [disabled]=disabled class="add" (click)="addProducto()">
+    <ion-fab-button *ngIf="!disabledfab && (accion != 'editar')" [disabled]=disabled class="add" (click)="addProducto()">
       <ion-icon name="add-circle"></ion-icon>
     </ion-fab-button>
   </ion-fab>
@@ -106,8 +106,17 @@
 </ion-content>
 
 <ion-button
+*ngIf="!disabledfab && (accion != 'editar')"
 [disabled] = disabledfab
 class = "almacen-button derecho"
 (click) = "creaDocumento()">
   <ion-icon name = "checkbox"></ion-icon>
+</ion-button>
+
+<ion-button
+*ngIf="disabledfab && (accion == 'editar') && (database.Documentos[DocPushID].estado == 'pendiente')"
+[disabled] = !disabledfab
+class = "almacen-button derecho abono"
+(click) = "creaDocumento()">
+<ion-icon name="cash"></ion-icon>
 </ion-button>

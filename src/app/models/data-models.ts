@@ -102,6 +102,7 @@
             public comprador: string // PushID del comprador al que va dirigida
             public usuario: string // PushID del empleado que realiza el documento
             public valor: number // monto total de todos los productos relacionnados en el documentos
+            public abonado: number
         constructor() {
             if(!this.tipo){
                 this.tipo = 'compra'
@@ -126,6 +127,9 @@
             }
             if(!this.valor){
                 this.valor = 0
+            }
+            if(!this.abonado){
+                this.abonado = 0
             }
             if(!this.key){
                 this.key = ''

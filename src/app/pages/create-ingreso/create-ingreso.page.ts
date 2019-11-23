@@ -133,22 +133,25 @@ export class CreateIngresoPage implements OnInit {
     this.disabledfab = true;
     this.DocPushID = data.key;
     let proveedor
+    this.ProductoControl = new FormControl({value: '', disabled: true});
+    this.CantidadControl = new FormControl({value: '', disabled: true});
+    this.costoControl = new FormControl({value: '', disabled: true});
+    this.BodegasControl = new FormControl({value: '', disabled: true});
+    this.estadoControl.setValue(data.estado);
+    if((this.accion == 'editar') && (data.estado == 'pagado' || data.estado == 'anulado')){this.estadoControl.disable()}
     if(this.mov == 'compra'){
       proveedor = this.database.Usuarios[data.proveedor].nombre
     }else{
       proveedor = this.database.Usuarios[data.comprador].nombre
     }
     this.ProveedoresControl = new FormControl({value: proveedor, disabled: true});
-    this.ProductoControl = new FormControl({value: '', disabled: true});
-    this.CantidadControl = new FormControl({value: '', disabled: true});
-    this.costoControl = new FormControl({value: '', disabled: true});
-    this.BodegasControl = new FormControl({value: '', disabled: true});
-    this.estadoControl.setValue(data.estado);
-    // this.estadoControl.disable();
     for(let i in this.database.Listas){
       if(this.database.Listas[i].documento == data.key){
         this.listaProductos.unshift(this.database.Listas[i]);
         this.total['costo'] += (this.database.Listas[i].costo * this.database.Listas[i].cantidad)
+        if(data.estado == 'pendiente'){
+          this.total['costo'] += (this.database.Listas[i].costo * this.database.Listas[i].cantidad)
+        }
         this.total['unid'] += this.database.Listas[i].cantidad;
       }
     }

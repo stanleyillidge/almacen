@@ -65,6 +65,13 @@
       <ion-icon name="add-circle"></ion-icon>
     </ion-fab-button>
   </ion-fab>
+  <ion-fab vertical="bottom" horizontal="end">
+    <ion-fab-button 
+    *ngIf="disabledfab && (accion == 'editar') && (database.Documentos[DocPushID].estado == 'pendiente')" 
+    [disabled]=!disabled class="abono" (click)="abono()">
+      <i class="material-icons">monetization_on</i>
+    </ion-fab-button>
+  </ion-fab>
 </ion-header>
 
 <ion-content class = "ion-padding" no-border>
@@ -111,12 +118,4 @@
 class = "almacen-button derecho"
 (click) = "creaDocumento()">
   <ion-icon name = "checkbox"></ion-icon>
-</ion-button>
-
-<ion-button
-*ngIf="disabledfab && (accion == 'editar') && (database.Documentos[DocPushID].estado == 'pendiente')"
-[disabled] = !disabledfab
-class = "almacen-button derecho abono"
-(click) = "creaDocumento()">
-<ion-icon name="cash"></ion-icon>
 </ion-button>

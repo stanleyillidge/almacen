@@ -12,7 +12,7 @@ import { ReplaySubject } from 'rxjs';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { WebView } from '@ionic-native/ionic-webview/ngx';
-import { LocalDatabase, Producto, Bodega, Inventario, Usuario, Documento, ListaDetallada } from '../models/data-models';
+import { LocalDatabase, Producto, Bodega, Inventario, Usuario, Documento, ListaDetallada, Pago } from '../models/data-models';
 import { dismiss } from '@ionic/core/dist/types/utils/overlays';
 
 @Injectable()
@@ -71,10 +71,12 @@ export class DataService {
                                 este.decargaDatabase('documentos').then(()=>{
                                     este.decargaDatabase('listas').then(()=>{
                                         este.decargaDatabase('inventario').then(()=>{
-                                            este.storage.set('database', JSON.stringify(este.database)).then(()=>{
-                                                console.log('Database:',este.database)
-                                                return
-                                            })
+                                            este.decargaDatabase('pagos').then(()=>{
+                                                este.storage.set('database', JSON.stringify(este.database)).then(()=>{
+                                                    console.log('Database:',este.database)
+                                                    return
+                                                })
+                                            });
                                         });
                                     });
                                 });
@@ -117,6 +119,9 @@ export class DataService {
                             break;
                         case 'inventario':
                             modelo = new Inventario();
+                            break;
+                        case 'pagos':
+                            modelo = new Pago();
                             break;
                         default:
                             break;
@@ -198,6 +203,14 @@ export class DataService {
                 })
                 este.databaseEvents('Inventario')
             }
+            if(data.Pagos){
+                este.database.Pagos = {}
+                Object.keys(data.Pagos).forEach(key=>{
+                    const modelo = new Pago;
+                    este.database.Pagos[key] = este.iteraModelo(modelo, data.Pagos[key]);
+                })
+                este.databaseEvents('Pagos')
+            }
             return este.database
         }
         databaseEvents(campo:string){
@@ -230,6 +243,9 @@ export class DataService {
                         este.InventarioObserver.next(este.database);
                         break;
                     case 'Listas':
+                        este.InventarioObserver.next(este.database);
+                        break;
+                    case 'Pagos':
                         este.InventarioObserver.next(este.database);
                         break;
                     default:
@@ -265,6 +281,10 @@ export class DataService {
                     break;
                 case 'Listas':
                     modelo = new ListaDetallada();
+                    observer = este.InventarioObserver
+                    break;
+                case 'Pagos':
+                    modelo = new Pago();
                     observer = este.InventarioObserver
                     break;
                 default:
@@ -472,44 +492,28 @@ export class DataService {
     // ---- Usuarios ----------------------------------------------
         async CloudFunctionUsuarios(usuario,accion){
             let este = this;
-            const loading = await this.loadingController.create({
-                // message: 'Trabajando...',
-                spinner:"dots",
-                translucent: true,
-                cssClass: 'backRed'
-            });
-            await loading.present();
             let funcion = "creaUsuarios"
             if(accion != 'crear'){
                 funcion = "actualizaUsuarios"
             }
-            let CloudFunction = firebase.functions().httpsCallable(funcion);
-            await CloudFunction(usuario).then(function(userRecord) {
-                // Read result of the Cloud Function.
-                console.log('Usuario creado: ',userRecord);
+            this.CloudFunctions(funcion,usuario).then(function(a:any){
+                console.log('rta',a)
                 let modelo = new Usuario();
                 if(!este.database.Usuarios){
                     este.database.Usuarios = {}
                     este.databaseEvents('Usuarios')
                 }
-                if(userRecord.data){
-                    usuario.key = userRecord.data;
-                    este.database.Usuarios[userRecord.data] = este.iteraModelo(modelo, usuario);
+                if(a.data){
+                    usuario.key = a.data;
+                    este.database.Usuarios[a.data] = este.iteraModelo(modelo, usuario);
                     este.storage.set('database', JSON.stringify(este.database)).then(()=>{
                         este.UsuariosObserver.next(este.database);
                         este.presentToastWithOptions('Termino correctamente',3000,'top')
                     })
                 }
-                loading.dismiss();
                 return true
-            }).catch(function(error) {
-                // Read result of the Cloud Function.
-                loading.dismiss();
-                console.log('Usuario error: ',error);
-                let titulo = 'Error'
-                let mensaje = error.message
-                este.presentAlert(titulo,mensaje)
-                return
+            }).catch(e=>{
+                console.log('error',e)
             })
         }
     // ---- Documentos --------------------------------------------
@@ -599,7 +603,64 @@ export class DataService {
                 return
             })
         }
+        async pagos(pago:Pago){
+            let este = this;
+            pago.key = firebase.database().ref().push().key;
+            pago.valor = Number(this.database.Documentos[pago.documento].abonos) + Number(pago.abono);
+            if(pago.valor > this.database.Documentos[pago.documento].valor){
+                let mensaje = 'Debe digitar un valor menor al total adeudado para realizar el proceso de pago';
+                this.presentAlert('Error',mensaje);
+                return
+            }
+            let data = {
+                key: pago.key,
+                fecha: pago.fecha,
+                documento: pago.documento,
+                valor: pago.valor,
+                abono: pago.abono,
+                usuario: pago.usuario
+             };
+            data['estado'] = 'pendiente';
+            if(data.valor == this.database.Documentos[pago.documento].valor){
+                data['estado'] = 'pagado'
+            }
+            console.log('Pago a ser realizado',data)
+            this.CloudFunctions('pagos',data).then(p=>{
+                este.database.Pagos[pago.documento] = pago;
+                este.database.Documentos[pago.documento].abonos = pago.valor;
+                este.storage.set('database', JSON.stringify(este.database)).then(()=>{
+                    este.InventarioObserver.next(este.database);
+                    este.presentToastWithOptions('Pago realizado correctamente',3000,'top')
+                })
+            }).catch(e=>{
+                console.log('error',e)
+            })
+        }
     // ---- Generales ---------------------------------------------
+        async CloudFunctions(funcion:string,data:any): Promise<any>{
+            let este = this;
+            const loading = await this.loadingController.create({
+                // message: 'Trabajando...',
+                spinner:"dots",
+                translucent: true,
+                cssClass: 'backRed'
+            });
+            await loading.present();
+            let CloudFunction = firebase.functions().httpsCallable(funcion);
+            return await CloudFunction(data).then(function(rta) {
+                // Read result of the Cloud Function.
+                console.log('Respuesta de '+funcion+':',rta);
+                loading.dismiss();
+                return rta
+            }).catch(function(error) {
+                console.log('Usuario error: ',error);
+                let titulo = 'Error'
+                let mensaje = error.message
+                loading.dismiss();
+                este.presentAlert(titulo,mensaje)
+                return error
+            })
+        }
         IsJsonString(str) {
             try {
                 JSON.parse(str);

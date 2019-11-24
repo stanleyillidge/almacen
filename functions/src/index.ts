@@ -121,21 +121,21 @@ const gcs = new Storage();
     function actualizaUsuario(data:any){
         console.log("Updated user:", data);
         let claims = {proveedor: false, admin: false, empleado: false, cliente: true}
-            switch (data.rol) { //'admin' | 'empleado' | 'proveedor' | 'cliente'
-                case 'proveedor':
-                    claims = {proveedor: true, admin: true, empleado: false, cliente: false}
-                    break;
-                case 'admin':
-                    claims = {proveedor: false, admin: true, empleado: false, cliente: false}
-                    break;
-                case 'empleado':
-                    claims = {proveedor: false, admin: false, empleado: true, cliente: false}
-                    break;
-                case 'cliente':
-                    claims = {proveedor: false, admin: false, empleado: false, cliente: true}
-                    break;
-            }
-            return admin.auth().setCustomUserClaims(data.uid, claims ).then(() => {
+        switch (data.rol) { //'admin' | 'empleado' | 'proveedor' | 'cliente'
+            case 'proveedor':
+                claims = {proveedor: true, admin: true, empleado: false, cliente: false}
+                break;
+            case 'admin':
+                claims = {proveedor: false, admin: true, empleado: false, cliente: false}
+                break;
+            case 'empleado':
+                claims = {proveedor: false, admin: false, empleado: true, cliente: false}
+                break;
+            case 'cliente':
+                claims = {proveedor: false, admin: false, empleado: false, cliente: true}
+                break;
+        }
+        return admin.auth().setCustomUserClaims(data.uid, claims ).then(() => {
             console.log("Successfully updated Claims to user:",data);
             ref.child('usuarios' + '/' + data.uid).update({
                 rol: data.rol,
@@ -147,7 +147,6 @@ const gcs = new Storage();
                 barrio: data.barrio,
                 direccion: data.direccion
             }).then(()=>{console.log('ok')}).catch((error)=>{console.log('error',error)})
-            
             return data.uid
         }).catch(function (error) {
             // console.log("Error creating new user:", error);
@@ -155,6 +154,32 @@ const gcs = new Storage();
             throw new functions.https.HttpsError('unknown', error.message, error);
         });
     }
+// ---- Pagos ----------------------------------------------------------------------
+    exports.pagos = functions.https.onCall((data, context) => {
+        // console.log('Usuario que solicita creacion:',context.auth.token)
+        const docRef = 'documentos/'+data.documento+'/abonos'
+        const pagosRef = 'pagos/'+data.key
+        const docRefestado = 'documentos/'+data.documento+'/estado'
+        const childs:{ [key: string]: any }={}
+        childs[docRef] = data.valor
+        childs[pagosRef] = {
+            key: data.key,
+            documento: data.documento,
+            fecha: data.fecha,
+            valor: data.valor,
+            abono: data.abono,
+            usuario: data.usuario
+        }
+        if(data.estado == 'pagado'){
+            childs[docRefestado] = data.estado
+        }
+        return ref.update(childs).then(async a=>{
+            return 'pago reportado correctamente en '+data.documento
+        }).catch(error=>{
+            console.error(error);
+            return
+        })
+    });
 // ---- Imagenes -------------------------------------------------------------------
     export const generateThumbs = functions.storage
     .object()

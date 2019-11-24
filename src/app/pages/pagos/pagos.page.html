@@ -1,0 +1,24 @@
+<ion-header no-border>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>Pagos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-row *ngIf="pagosArray" wrap>
+    <ion-col class="col-card" *ngFor="let d of pagosArray">
+      <ion-item>
+        {{d.valor | number}}
+      </ion-item>
+    </ion-col>
+  </ion-row>
+</ion-content>
+
+<ion-button
+class = "almacen-button derecho abono"
+(click) = "pagos()">
+<i class="material-icons">monetization_on</i>
+</ion-button>

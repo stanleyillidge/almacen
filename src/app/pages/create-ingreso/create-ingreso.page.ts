@@ -138,23 +138,28 @@ export class CreateIngresoPage implements OnInit {
     this.costoControl = new FormControl({value: '', disabled: true});
     this.BodegasControl = new FormControl({value: '', disabled: true});
     this.estadoControl.setValue(data.estado);
-    if((this.accion == 'editar') && (data.estado == 'pagado' || data.estado == 'anulado')){this.estadoControl.disable()}
+    this.estadoControl.disable();
+    // if((this.accion == 'editar') && (data.estado == 'pagado' || data.estado == 'anulado')){this.estadoControl.disable()}
     if(this.mov == 'compra'){
       proveedor = this.database.Usuarios[data.proveedor].nombre
     }else{
       proveedor = this.database.Usuarios[data.comprador].nombre
     }
     this.ProveedoresControl = new FormControl({value: proveedor, disabled: true});
+    this.total['costo'] = data.valor;
+    if(data.estado == 'pendiente'){
+      this.total['costo'] = data.abonos;
+    }
     for(let i in this.database.Listas){
       if(this.database.Listas[i].documento == data.key){
         this.listaProductos.unshift(this.database.Listas[i]);
-        this.total['costo'] += (this.database.Listas[i].costo * this.database.Listas[i].cantidad)
-        if(data.estado == 'pendiente'){
-          this.total['costo'] += (this.database.Listas[i].costo * this.database.Listas[i].cantidad)
-        }
         this.total['unid'] += this.database.Listas[i].cantidad;
       }
     }
+  }
+  abono(){
+    let page = 'pagos'
+    this.navCtrl.navigateForward([page,{key:this.DocPushID}]);
   }
   creaFormularioVacio(){
     this.DocPushID = firebase.database().ref().push().key;
@@ -175,6 +180,7 @@ export class CreateIngresoPage implements OnInit {
         this.documento[this.DocPushID].estado = 'pendiente';
         this.documento[this.DocPushID].numProductos = 0;
         this.documento[this.DocPushID].valor = 0;
+        this.documento[this.DocPushID].abonos = 0;
         this.documento[this.DocPushID].comprador = 'su empresa';
         this.documento[this.DocPushID].usuario = 'usuario autenticado en la app'
       }

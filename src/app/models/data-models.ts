@@ -102,7 +102,7 @@
             public comprador: string // PushID del comprador al que va dirigida
             public usuario: string // PushID del empleado que realiza el documento
             public valor: number // monto total de todos los productos relacionnados en el documentos
-            public abonado: number
+            public abonos: number
         constructor() {
             if(!this.tipo){
                 this.tipo = 'compra'
@@ -128,8 +128,8 @@
             if(!this.valor){
                 this.valor = 0
             }
-            if(!this.abonado){
-                this.abonado = 0
+            if(!this.abonos){
+                this.abonos = 0
             }
             if(!this.key){
                 this.key = ''
@@ -335,6 +335,34 @@
             }
         }
     }
+    export class Pago {
+        public key: string // PushID del pago
+            public documento: string // PushID del documento
+            public fecha: Date
+            public valor: number // total abonado hasta la fecha del mov
+            public abono: number // valor abonado en la fecha del mov
+            public usuario: string // PushID del empleado que realiza el documento // campo heredado del documento
+        constructor() {
+            if(!this.key){
+                this.key = ''
+            }
+            if(!this.documento){
+                this.documento = ''
+            }
+            if(!this.fecha){
+                this.fecha = new Date();
+            }
+            if(!this.valor){
+                this.valor = 0
+            }
+            if(!this.abono){
+                this.abono = 0
+            }
+            if(!this.usuario){
+                this.usuario = ''
+            }
+        }
+    }
 // ---- Data Base ---------------
     export class LocalDatabase {
         public Usuarios: { [key: string]: Usuario };
@@ -343,5 +371,6 @@
         public Listas: { [key: string]: ListaDetallada };
         public Productos: { [key: string]: Producto };
         public Inventario: { [key: string]: Inventario };
+        public Pagos: { [key: string]: Pago };
     }
 // ------------------------------

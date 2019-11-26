@@ -11,7 +11,7 @@
   <ion-row *ngIf="pagosArray" wrap>
     <ion-col class="col-card" *ngFor="let d of pagosArray">
       <ion-item>
-        {{d.valor | number}}
+        $ {{d.abono | number}}
       </ion-item>
     </ion-col>
   </ion-row>

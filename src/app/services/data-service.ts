@@ -290,7 +290,9 @@ export class DataService {
                 default:
                     break;
             }
-            este.database[campo][key] = este.iteraModelo(modelo,data);
+            if(!este.database[campo][key]){
+                este.database[campo][key] = este.iteraModelo(modelo,data);
+            }
             console.log('Datbase a guardar',este.database)
             este.storage.set('database', JSON.stringify(este.database)).then(()=>{
                 observer.next(este.database);
@@ -605,13 +607,13 @@ export class DataService {
         }
         async pagos(pago:Pago){
             let este = this;
-            pago.key = firebase.database().ref().push().key;
             pago.valor = Number(this.database.Documentos[pago.documento].abonos) + Number(pago.abono);
             if(pago.valor > this.database.Documentos[pago.documento].valor){
                 let mensaje = 'Debe digitar un valor menor al total adeudado para realizar el proceso de pago';
                 this.presentAlert('Error',mensaje);
                 return
             }
+            pago.key = firebase.database().ref().push().key;
             let data = {
                 key: pago.key,
                 fecha: pago.fecha,
@@ -626,10 +628,10 @@ export class DataService {
             }
             console.log('Pago a ser realizado',data)
             this.CloudFunctions('pagos',data).then(p=>{
-                este.database.Pagos[pago.documento] = pago;
+                este.database.Pagos[pago.key] = pago;
                 este.database.Documentos[pago.documento].abonos = pago.valor;
                 este.storage.set('database', JSON.stringify(este.database)).then(()=>{
-                    este.InventarioObserver.next(este.database);
+                    // este.InventarioObserver.next(este.database);
                     este.presentToastWithOptions('Pago realizado correctamente',3000,'top')
                 })
             }).catch(e=>{

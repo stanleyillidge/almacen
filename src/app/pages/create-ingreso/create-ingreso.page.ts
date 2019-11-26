@@ -94,6 +94,12 @@ export class CreateIngresoPage implements OnInit {
       console.log(this.key)
       this.creaFormulario(this.database.Documentos[this.key])
     }
+    this.ds.InventarioObserver.subscribe((newData) => {
+      console.log('Se actualizó un inventario',newData);
+      this.database = newData;
+      this.actualiza(this.database)
+      this.creaFormulario(this.database.Documentos[this.key])
+    });
   }
   editar(data){
     this.dataEdit = data;
@@ -129,6 +135,7 @@ export class CreateIngresoPage implements OnInit {
   }
   creaFormulario(data:Documento){
     console.log(data)
+    this.listaProductos = [];
     this.disabled = true;
     this.disabledfab = true;
     this.DocPushID = data.key;

@@ -372,5 +372,6 @@
         public Productos: { [key: string]: Producto };
         public Inventario: { [key: string]: Inventario };
         public Pagos: { [key: string]: Pago };
+        constructor(){}
     }
 // ------------------------------

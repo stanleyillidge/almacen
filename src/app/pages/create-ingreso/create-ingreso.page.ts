@@ -138,7 +138,7 @@ export class CreateIngresoPage implements OnInit {
     this.listaProductos = [];
     this.disabled = true;
     this.disabledfab = true;
-    this.DocPushID = data.key;
+    // this.DocPushID = data.key; // error
     let proveedor
     this.ProductoControl = new FormControl({value: '', disabled: true});
     this.CantidadControl = new FormControl({value: '', disabled: true});

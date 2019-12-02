@@ -44,6 +44,7 @@ export class DataService {
         // this.storage.clear();// quitar cuando este en produccion
     }
     // ---- Database ----------------------------------------------
+        // hola mundo
         async initDatabase(){
             let este = this
             if(this.plataforma.cordova){

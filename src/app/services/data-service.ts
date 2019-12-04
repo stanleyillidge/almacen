@@ -41,10 +41,9 @@ export class DataService {
         this.plataforma.desktop = this.platform.is("desktop");
         this.plataforma.android = this.platform.is("android");
         this.plataforma.cordova = this.platform.is("cordova");
-        // this.storage.clear();// quitar cuando este en produccion
+        this.storage.clear();// quitar cuando este en produccion
     }
     // ---- Database ----------------------------------------------
-        // hola mundo
         async initDatabase(){
             let este = this
             if(this.plataforma.cordova){
@@ -625,15 +624,17 @@ export class DataService {
              };
             data['estado'] = 'pendiente';
             if(data.valor == this.database.Documentos[pago.documento].valor){
-                data['estado'] = 'pagado'
+                data['estado'] = 'pagado';
             }
             console.log('Pago a ser realizado',data)
             this.CloudFunctions('pagos',data).then(p=>{
-                este.database.Pagos[pago.key] = pago;
-                este.database.Documentos[pago.documento].abonos = pago.valor;
+                este.database.Pagos[data.key] = data;
+                este.database.Documentos[data.documento].abonos = data.valor;
+                este.database.Documentos[data.documento].estado = data['estado'];
                 este.storage.set('database', JSON.stringify(este.database)).then(()=>{
-                    // este.InventarioObserver.next(este.database);
                     este.presentToastWithOptions('Pago realizado correctamente',3000,'top')
+                    console.log('Pago terminado',data.documento,este.database)
+                    // este.InventarioObserver.next(este.database);
                 })
             }).catch(e=>{
                 console.log('error',e)

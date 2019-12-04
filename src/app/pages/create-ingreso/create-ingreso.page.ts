@@ -61,6 +61,8 @@ export class CreateIngresoPage implements OnInit {
     this.documento = {};
     this.total['costo'] = 0;
     this.total['unid'] = 0;
+    this.total['pendiente'] = 0;
+    this.total['estado'] = '';
     this.listaProductos = [];
     this.accion = this.route.snapshot.paramMap.get('accion');
     this.mov = this.route.snapshot.paramMap.get('mov');
@@ -86,6 +88,7 @@ export class CreateIngresoPage implements OnInit {
         map(value => this._filterBodegas(value))
       );
     console.log(this.mov,this.accion)
+    
     if(this.accion =='crear'){
       this.creaFormularioVacio()
     }else{      
@@ -93,12 +96,15 @@ export class CreateIngresoPage implements OnInit {
       this.DocPushID = this.key;
       console.log(this.key)
       this.creaFormulario(this.database.Documentos[this.key])
-    }
+    }    
     this.ds.InventarioObserver.subscribe((newData) => {
       console.log('Se actualizó un inventario',newData);
-      this.database = newData;
-      this.actualiza(this.database)
-      this.creaFormulario(this.database.Documentos[this.key])
+      this.key = this.route.snapshot.paramMap.get('key');
+      if(this.key){
+        this.database = newData;
+        this.actualiza(this.database)
+        this.creaFormulario(this.database.Documentos[this.key])
+      }
     });
   }
   editar(data){
@@ -154,8 +160,10 @@ export class CreateIngresoPage implements OnInit {
     }
     this.ProveedoresControl = new FormControl({value: proveedor, disabled: true});
     this.total['costo'] = data.valor;
+    this.total['estado'] = data.estado;
     if(data.estado == 'pendiente'){
       this.total['costo'] = data.abonos;
+      this.total['pendiente'] = data.valor - data.abonos;
     }
     for(let i in this.database.Listas){
       if(this.database.Listas[i].documento == data.key){
@@ -268,6 +276,17 @@ export class CreateIngresoPage implements OnInit {
   async creaDocumento(){
     let este = this
     console.log(this.accion,this.estadoControl.value)
+    
+    let comprador = this.getKeyByValue(this.usuarios[this.TipoUsuario], this.ProveedoresControl.value,'nombre');
+    let proveedor = 'su empresa'
+    if(this.mov == 'compra'){
+      comprador = 'su empresa'
+      proveedor = this.getKeyByValue(this.usuarios[this.TipoUsuario], this.ProveedoresControl.value,'nombre');
+    }
+    this.documento[this.DocPushID].proveedor = proveedor;
+    this.documento[this.DocPushID].comprador = comprador;
+    this.documento[this.DocPushID].estado = this.estadoControl.value;
+
     if(this.accion == 'crear'){
       if(this.listaProductos.length>0){
         if(this.ProveedoresControl.value != ''){
@@ -317,7 +336,9 @@ export class CreateIngresoPage implements OnInit {
       this.disabledfab = false;
     }
   }
-  ngOnInit(){}
+  ngOnInit(){
+    
+  }
   actualiza(data){
     let este = this;
     este.usuariost = {};

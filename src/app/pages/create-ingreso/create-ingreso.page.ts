@@ -20,7 +20,7 @@ export class CreateIngresoPage implements OnInit {
   filteredProveedores: Observable<string[]>;
 
   ProductoControl = new FormControl();
-  productos: string[] = [];
+  productos: any = {};
   filteredProductos: Observable<string[]>;
 
   BodegasControl = new FormControl();
@@ -30,10 +30,10 @@ export class CreateIngresoPage implements OnInit {
   CantidadControl = new FormControl();
   costoControl = new FormControl();
   estadoControl = new FormControl();
+  descuentoControl = new FormControl(0, [Validators.max(100), Validators.min(0)]);
   
   newIngresoForm: FormGroup;
   accion:string;
-  key: string;
   usuariost: {};
   usuarios: {};
   database: LocalDatabase;
@@ -47,6 +47,7 @@ export class CreateIngresoPage implements OnInit {
   mov: string;
   TipoUsuario: string;
   disabledfab: boolean = false;
+  descMax: number = 0;
   
   constructor(
     public navCtrl: NavController,
@@ -58,6 +59,8 @@ export class CreateIngresoPage implements OnInit {
     this.database = this.ds.Database
     this.total = {};
     this.lista = {};
+    this.productos['array'] = [];
+    this.productos['obj'] = {};
     this.documento = {};
     this.total['costo'] = 0;
     this.total['unid'] = 0;
@@ -90,22 +93,34 @@ export class CreateIngresoPage implements OnInit {
     console.log(this.mov,this.accion)
     
     if(this.accion =='crear'){
+      if(this.mov == 'compra'){this.descuentoControl.disable();}
       this.creaFormularioVacio()
     }else{      
-      this.key = this.route.snapshot.paramMap.get('key');
-      this.DocPushID = this.key;
-      console.log(this.key)
-      this.creaFormulario(this.database.Documentos[this.key])
-    }    
+      this.DocPushID = this.route.snapshot.paramMap.get('key');
+      console.log(this.DocPushID)
+      this.creaFormulario(this.database.Documentos[this.DocPushID])
+    }
+    
     this.ds.InventarioObserver.subscribe((newData) => {
       console.log('Se actualizó un inventario',newData);
-      this.key = this.route.snapshot.paramMap.get('key');
-      if(this.key){
+      if(this.route.snapshot.paramMap.get('key')){
+        this.DocPushID = this.route.snapshot.paramMap.get('key');
         this.database = newData;
         this.actualiza(this.database)
-        this.creaFormulario(this.database.Documentos[this.key])
+        this.creaFormulario(this.database.Documentos[this.DocPushID])
       }
     });
+  }
+  change(e){
+    if(this.mov == 'venta'){
+      console.log(e)
+      const key = this.productos.obj[e.source.value];
+      this.costoControl.enable();
+      this.descMax = this.database.Productos[key].descuento;
+      this.descuentoControl = new FormControl(0, [Validators.max(this.descMax), Validators.min(0)]);
+      this.costoControl.setValue(this.database.Productos[key].precio);
+      this.costoControl.disable();
+    }
   }
   editar(data){
     this.dataEdit = data;
@@ -152,7 +167,9 @@ export class CreateIngresoPage implements OnInit {
     this.BodegasControl = new FormControl({value: '', disabled: true});
     this.estadoControl.setValue(data.estado);
     this.estadoControl.disable();
-    // if((this.accion == 'editar') && (data.estado == 'pagado' || data.estado == 'anulado')){this.estadoControl.disable()}
+    if((this.accion == 'editar')){
+      this.estadoControl.enable();
+    }
     if(this.mov == 'compra'){
       proveedor = this.database.Usuarios[data.proveedor].nombre
     }else{
@@ -178,8 +195,19 @@ export class CreateIngresoPage implements OnInit {
   }
   creaFormularioVacio(){
     this.DocPushID = firebase.database().ref().push().key;
+    this.documento[this.DocPushID] = new Documento;
+    this.documento[this.DocPushID].key = this.DocPushID;
+    this.documento[this.DocPushID].creacion = new Date();
+    this.documento[this.DocPushID].tipo = this.mov;
+    this.documento[this.DocPushID].estado = 'pendiente';
+    this.documento[this.DocPushID].numProductos = 0;
+    this.documento[this.DocPushID].valor = 0;
+    this.documento[this.DocPushID].abonos = 0;
+    this.documento[this.DocPushID].comprador = 'su empresa';
+    this.documento[this.DocPushID].usuario = 'usuario autenticado en la app'
+    console.log('creo formulario vacio',this.documento)
   }
-  addProducto(){
+  addProducto_old(){
     let comprador = this.getKeyByValue(this.usuarios[this.TipoUsuario], this.ProveedoresControl.value,'nombre');
     let proveedor = 'su empresa'
     if(this.mov == 'compra'){
@@ -187,7 +215,7 @@ export class CreateIngresoPage implements OnInit {
       proveedor = this.getKeyByValue(this.usuarios[this.TipoUsuario], this.ProveedoresControl.value,'nombre');
     }
     if(!this.disabled){
-      if(!this.documento[this.DocPushID]){
+      /*if(!this.documento[this.DocPushID]){
         this.documento[this.DocPushID] = new Documento;
         this.documento[this.DocPushID].key = this.DocPushID;
         this.documento[this.DocPushID].creacion = new Date();
@@ -198,7 +226,7 @@ export class CreateIngresoPage implements OnInit {
         this.documento[this.DocPushID].abonos = 0;
         this.documento[this.DocPushID].comprador = 'su empresa';
         this.documento[this.DocPushID].usuario = 'usuario autenticado en la app'
-      }
+      }*/
       const nombre = this.ProductoControl.value
       this.documento[this.DocPushID].proveedor = proveedor;
       this.documento[this.DocPushID].comprador = comprador;
@@ -209,7 +237,7 @@ export class CreateIngresoPage implements OnInit {
       this.lista[key] = new ListaDetallada();
       for(let i in this.database.Productos){
         if(this.database.Productos[i].nombre == nombre){
-          this.total['costo'] += (Number(costo) * Number(cantidades))
+          this.total['costo'] += (Number(costo) *(1 - (Number(this.descuentoControl.value)/100))* Number(cantidades))
           this.total['unid'] += Number(cantidades);
           this.documento[this.DocPushID].valor = this.total['costo'];
           this.documento[this.DocPushID].numProductos = this.total['unid'];
@@ -224,7 +252,7 @@ export class CreateIngresoPage implements OnInit {
           this.lista[key].producto = this.database.Productos[i].key;
           this.lista[key].precio = this.database.Productos[i].precio;
           this.lista[key].costo = Number(costo);
-          this.lista[key].descuento = this.database.Productos[i].descuento;
+          this.lista[key].descuento = Number(this.descuentoControl.value)/100;
           this.lista[key].cantidad = Number(cantidades);
           this.lista[key]['nombre'] = this.database.Productos[i].nombre;
           this.listaProductos.unshift(this.lista[key]);
@@ -235,7 +263,7 @@ export class CreateIngresoPage implements OnInit {
         }
       }
     }else{
-      this.DocPushID = this.key;
+      // this.DocPushID = this.key;
       const key = this.dataEdit.key;
       const nombre = this.ProductoControl.value
       this.documento[this.DocPushID].proveedor = proveedor;
@@ -246,7 +274,7 @@ export class CreateIngresoPage implements OnInit {
       this.lista[key] = new ListaDetallada();
       for(let i in this.database.Productos){
         if(this.database.Productos[i].nombre == nombre){
-          this.total['costo'] += (Number(costo) * Number(cantidades))
+          this.total['costo'] += (Number(costo) *(1 - (Number(this.descuentoControl.value)/100))* Number(cantidades))
           this.total['unid'] += Number(cantidades);
           this.documento[this.DocPushID].valor = this.total['costo'];
           this.documento[this.DocPushID].numProductos = this.total['unid'];
@@ -261,7 +289,7 @@ export class CreateIngresoPage implements OnInit {
           this.lista[key].producto = this.database.Productos[i].key;
           this.lista[key].precio = this.database.Productos[i].precio;
           this.lista[key].costo = Number(costo);
-          this.lista[key].descuento = this.database.Productos[i].descuento;
+          this.lista[key].descuento = Number(this.descuentoControl.value)/100;
           this.lista[key].cantidad = Number(cantidades);
           this.lista[key]['nombre'] = this.database.Productos[i].nombre;
           this.listaProductos.unshift(this.lista[key]);
@@ -273,23 +301,80 @@ export class CreateIngresoPage implements OnInit {
       }
     }
   }
-  async creaDocumento(){
-    let este = this
-    console.log(this.accion,this.estadoControl.value)
-    
-    let comprador = this.getKeyByValue(this.usuarios[this.TipoUsuario], this.ProveedoresControl.value,'nombre');
-    let proveedor = 'su empresa'
-    if(this.mov == 'compra'){
-      comprador = 'su empresa'
-      proveedor = this.getKeyByValue(this.usuarios[this.TipoUsuario], this.ProveedoresControl.value,'nombre');
+  addProducto(){
+    let comprador
+    let proveedor
+    switch (this.mov) {
+      case 'compra':
+        comprador = 'su empresa'
+        proveedor = this.getKeyByValue(this.usuarios[this.TipoUsuario], this.ProveedoresControl.value,'nombre');
+        break;
+      case 'venta':
+        comprador = this.getKeyByValue(this.usuarios[this.TipoUsuario], this.ProveedoresControl.value,'nombre');
+        proveedor = 'su empresa'
+        break;
+      default:
+        break;
     }
+    console.log('Documento a modificar',this.DocPushID,this.documento)
+    const nombre = this.ProductoControl.value
     this.documento[this.DocPushID].proveedor = proveedor;
     this.documento[this.DocPushID].comprador = comprador;
     this.documento[this.DocPushID].estado = this.estadoControl.value;
-
+    const cantidades = this.CantidadControl.value
+    const costo = this.costoControl.value
+    const key = firebase.database().ref().push().key;
+    this.lista[key] = new ListaDetallada();
+    for(let i in this.database.Productos){
+      if(this.database.Productos[i].nombre == nombre){
+        this.total['costo'] += (Number(costo) *(1 - (Number(this.descuentoControl.value)/100))* Number(cantidades))
+        this.total['unid'] += Number(cantidades);
+        this.documento[this.DocPushID].valor = this.total['costo'];
+        this.documento[this.DocPushID].numProductos = this.total['unid'];
+        this.lista[key].key = key;
+        this.lista[key].tipo = this.documento[this.DocPushID].tipo;
+        this.lista[key].creacion = this.documento[this.DocPushID].creacion;
+        this.lista[key].bodega =  this.getKeyByValue(this.database.Bodegas, this.BodegasControl.value,'nombre');
+        this.lista[key].documento = this.DocPushID;
+        this.lista[key].proveedor = proveedor
+        this.lista[key].comprador = comprador
+        this.lista[key].usuario = 'usuario autenticado en la app'
+        this.lista[key].producto = this.database.Productos[i].key;
+        if (this.mov =='compra') {
+          this.lista[key].costo = Number(costo); 
+        }else if (this.mov =='venta'){
+          this.lista[key].precio = this.database.Productos[i].precio; 
+        }
+        this.lista[key].descuento = Number(this.descuentoControl.value)/100;
+        this.lista[key].cantidad = Number(cantidades);
+        this.lista[key]['nombre'] = this.database.Productos[i].nombre;
+        this.listaProductos.unshift(this.lista[key]);
+        this.ProductoControl.setValue('');
+        this.CantidadControl.setValue('');
+        this.costoControl.setValue('');
+        this.descuentoControl.setValue(0);
+        console.log(this.documento, this.lista)
+      }
+    }
+  }
+  async creaDocumento(){
+    let este = this
+    console.log(this.accion,this.estadoControl.value)
     if(this.accion == 'crear'){
       if(this.listaProductos.length>0){
         if(this.ProveedoresControl.value != ''){
+
+          let comprador = this.getKeyByValue(this.usuarios[this.TipoUsuario], this.ProveedoresControl.value,'nombre');
+          let proveedor = 'su empresa'
+          if(this.mov == 'compra'){
+            comprador = 'su empresa'
+            proveedor = this.getKeyByValue(this.usuarios[this.TipoUsuario], this.ProveedoresControl.value,'nombre');
+          }
+          this.documento[this.DocPushID].proveedor = proveedor;
+          this.documento[this.DocPushID].comprador = comprador;
+          this.documento[this.DocPushID].estado = this.estadoControl.value;
+          this.documento[this.DocPushID].creacion = new Date();
+
           this.ds.creaIngreso(this.documento[this.DocPushID],this.lista).then(a=>{
             este.navCtrl.pop()
           })
@@ -324,6 +409,10 @@ export class CreateIngresoPage implements OnInit {
             text: 'Ok',
             handler: (d) => {
               this.documento[this.DocPushID].observacion = d.observacion
+              console.log('Documento a ser anulado',this.DocPushID,this.documento);
+              this.ds.actualizaDoc(this.documento[this.DocPushID]).then(a=>{
+                este.navCtrl.pop()
+              })
             }
           }
         ]
@@ -336,16 +425,15 @@ export class CreateIngresoPage implements OnInit {
       this.disabledfab = false;
     }
   }
-  ngOnInit(){
-    
-  }
+  ngOnInit(){}
   actualiza(data){
     let este = this;
     este.usuariost = {};
     este.usuarios = {};
     if(data.Productos){
       Object.keys(data.Productos).map(function(i){
-        este.productos.push(data.Productos[i].nombre)
+        este.productos.array.push(data.Productos[i].nombre)
+        este.productos.obj[data.Productos[i].nombre] = i;
       });
     }
     if(data.Usuarios){
@@ -380,7 +468,7 @@ export class CreateIngresoPage implements OnInit {
   }
   private _filterProductos(values: string): string[] {
     const filterValues = values.toLowerCase();
-    return this.productos.filter(options => options.toLowerCase().includes(filterValues));
+    return this.productos.array.filter(options => options.toLowerCase().includes(filterValues));
   }
   private _filterBodegas(values: string): string[] {
     const filterValues = values.toLowerCase();

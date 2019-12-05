@@ -41,7 +41,7 @@ export class DataService {
         this.plataforma.desktop = this.platform.is("desktop");
         this.plataforma.android = this.platform.is("android");
         this.plataforma.cordova = this.platform.is("cordova");
-        this.storage.clear();// quitar cuando este en produccion
+        // this.storage.clear();// quitar cuando este en produccion
     }
     // ---- Database ----------------------------------------------
         async initDatabase(){

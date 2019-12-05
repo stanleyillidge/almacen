@@ -23,8 +23,12 @@ export class IngresosPage implements OnInit {
     this.ds.InventarioObserver.subscribe((newData) => {
       console.log('Se actualizó un inventario',newData);
       this.database = newData;
-      this.actualiza(this.database)
-      console.log(this.ingresos)
+      este.ingresost = [];
+      este.ingresos = [];
+      setTimeout(function(){
+        este.actualiza(este.database)
+        console.log(este.ingresos)
+      }, 300);
     });
   }
   onInput(ev:any){

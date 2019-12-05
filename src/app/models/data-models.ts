@@ -90,6 +90,66 @@
             return (this.alto * this.largo * this.ancho)
         }
     }
+    export class Producto {
+        // [ seria necesario crear un producto base nuevo para cada presentación del producto ej: cerveza corona 355ml y cerveza corona 207ml]
+        public key: string // PushID del Producto
+            public creacion: Date
+            public nombre: string // nombre del producto
+            public tipo: 'consumible' | 'mueble' | 'producto'
+            public imagen: string
+            public descripcion: string
+            public disponibilidad: boolean
+            public largo: number // largo en metros[m] del empaque del producto
+            public ancho: number // ancho en metros[m] del empaque del producto
+            public alto: number // alto en metros[m] del empaque del producto
+            public cantidad: number // numero total de unidades de producto dentro del empaque
+            public precio: number // precio de venta del producto [ solo el admin puede definirlo ]
+            public descuento: number // porcentaje de descuento unitario [ solo el admin puede definirlo ]
+        constructor() { 
+            if(!this.key){
+                this.key = ''
+            }
+            if (!this.imagen) {
+                this.imagen = "/assets/shapes.svg";
+            }
+            if(!this.creacion){
+                this.creacion = new Date()
+            }
+            if(!this.nombre){
+                this.nombre = ''
+            }
+            if(!this.tipo){
+                this.tipo = 'producto'
+            }
+            if(!this.imagen){
+                this.imagen = ''
+            }
+            if(!this.descripcion){
+                this.descripcion = ''
+            }
+            if(!this.disponibilidad){
+                this.disponibilidad = true
+            }
+            if(!this.largo){
+                this.largo = 0
+            }
+            if(!this.ancho){
+                this.ancho = 0
+            }
+            if(!this.alto){
+                this.alto = 0
+            }
+            if(!this.cantidad){
+                this.cantidad = 0
+            }
+            if(!this.precio){
+                this.precio = 0
+            }
+            if(!this.descuento){
+                this.descuento = 0
+            }
+        }
+    }
     export class Documento{
         public key: string // PushID del documento
             public tipo: 'compra' | 'venta' | 'traslado' | 'notaDebito' | 'notaCredito'
@@ -144,6 +204,7 @@
         // se incluiran los productos uno a uno con un PushID para cada ingreso
         public key: string // PushID del producto en la lista
             public tipo: 'compra' | 'venta' | 'traslado' | 'notaDebito' | 'notaCredito'
+            public estado: 'pagado' | 'pendiente' | 'anulado'
             public creacion: Date
             public nombre: string // nombre del producto
             public bodega: string // PushID de la bodega
@@ -207,66 +268,6 @@
                 return (this.costo * (1 - this.descuento) * this.cantidad)
             }else if (this.tipo =='venta'){
                 return (this.precio * (1 - this.descuento) * this.cantidad)
-            }
-        }
-    }
-    export class Producto {
-        // [ seria necesario crear un producto base nuevo para cada presentación del producto ej: cerveza corona 355ml y cerveza corona 207ml]
-        public key: string // PushID del Producto
-            public creacion: Date
-            public nombre: string // nombre del producto
-            public tipo: 'consumible' | 'mueble' | 'producto'
-            public imagen: string
-            public descripcion: string
-            public disponibilidad: boolean
-            public largo: number // largo en metros[m] del empaque del producto
-            public ancho: number // ancho en metros[m] del empaque del producto
-            public alto: number // alto en metros[m] del empaque del producto
-            public cantidad: number // numero total de unidades de producto dentro del empaque
-            public precio: number // precio de venta del producto [ solo el admin puede definirlo ]
-            public descuento: number // porcentaje de descuento unitario [ solo el admin puede definirlo ]
-        constructor() { 
-            if(!this.key){
-                this.key = ''
-            }
-            if (!this.imagen) {
-                this.imagen = "/assets/shapes.svg";
-            }
-            if(!this.creacion){
-                this.creacion = new Date()
-            }
-            if(!this.nombre){
-                this.nombre = ''
-            }
-            if(!this.tipo){
-                this.tipo = 'producto'
-            }
-            if(!this.imagen){
-                this.imagen = ''
-            }
-            if(!this.descripcion){
-                this.descripcion = ''
-            }
-            if(!this.disponibilidad){
-                this.disponibilidad = true
-            }
-            if(!this.largo){
-                this.largo = 0
-            }
-            if(!this.ancho){
-                this.ancho = 0
-            }
-            if(!this.alto){
-                this.alto = 0
-            }
-            if(!this.cantidad){
-                this.cantidad = 0
-            }
-            if(!this.precio){
-                this.precio = 0
-            }
-            if(!this.descuento){
-                this.descuento = 0
             }
         }
     }

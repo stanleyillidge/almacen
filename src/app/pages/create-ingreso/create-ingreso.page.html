@@ -20,8 +20,8 @@
     <mat-form-field class="num2">
       <mat-label>Estado</mat-label>
       <mat-select [value]="estadoControl.value" (selectionChange)="onClick()" [formControl]="estadoControl">
-        <mat-option value="pagado">Pagado</mat-option>
-        <mat-option value="pendiente">Pendiente</mat-option>
+        <mat-option *ngIf="accion != 'editar'" value="pagado">Pagado</mat-option>
+        <mat-option *ngIf="accion != 'editar'" value="pendiente">Pendiente</mat-option>
         <mat-option value="anulado">Anulado</mat-option>
       </mat-select>
     </mat-form-field>
@@ -31,7 +31,7 @@
       <mat-label>Productos</mat-label>
       <input type="text" aria-label="Number" matInput [formControl]="ProductoControl" [matAutocomplete]="auto2">
       <mat-autocomplete #auto2="matAutocomplete">
-        <mat-option *ngFor="let productos of filteredProductos | async" [value]="productos">
+        <mat-option (onSelectionChange)="change($event)" *ngFor="let productos of filteredProductos | async" [value]="productos">
           {{productos}}
         </mat-option>
       </mat-autocomplete>
@@ -48,7 +48,13 @@
     </mat-form-field>
   </ion-col>
   <ion-col warp>
-    <mat-form-field class="pro">
+    <mat-form-field class="descuento">
+      <input matInput [formControl]="descuentoControl" #descuento maxlength="4" placeholder="%">
+      <mat-error>Valores entre 0 y {{descMax}}</mat-error>
+    </mat-form-field>
+  </ion-col>
+  <ion-col warp>
+    <mat-form-field class="bodega">
       <mat-label>Bodegas</mat-label>
       <input type="text" aria-label="Number" matInput [formControl]="BodegasControl" [matAutocomplete]="auto3">
       <mat-autocomplete #auto3="matAutocomplete">
@@ -75,20 +81,20 @@
   </ion-fab>
 </ion-header>
 
-<ion-content class = "ion-padding" no-border>
+<ion-content no-border>
   <!-- listaProductos -->
   <div class="ion-padding" *ngIf="listaProductos">
     <ion-item-sliding *ngFor="let d of listaProductos">
       <ion-item>
-        <ion-col size="7">
+        <ion-col size="10">
           <ion-item>
             <ion-label>
               <h2 class="nombre">{{d.nombre}}</h2>
-              <p class="costo">$ {{d.costo | number}}</p>
+              <p class="costo">$ {{d.costo | number}} x {{d.descuento | number}} %</p>
             </ion-label>
           </ion-item>
         </ion-col>
-        <ion-col size="5">
+        <ion-col size="2">
           <ion-item>
             <ion-label>
               <h2 class="unid">Unidades</h2>
@@ -114,7 +120,7 @@
 </ion-content>
 
 <ion-button
-*ngIf="!disabledfab && (accion != 'editar')"
+*ngIf="!disabledfab"
 [disabled] = disabledfab
 class = "almacen-button derecho"
 (click) = "creaDocumento()">

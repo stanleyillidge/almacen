@@ -540,29 +540,38 @@ export class DataService {
             this.database.Documentos[doc.key] = doc;
             let index = ''
             const data = {}
-            // 'documentos':d,
-            //     'listas':l
             index = 'documentos/'+doc.key
             data[index] = doc;
             for(let i in listas){
-                this.database.Listas[i] = listas[i];
-                if(!this.database.Inventario[i]){
-                    this.database.Inventario[i] = new Inventario();
-                }
-                this.database.Inventario[i].bodega = listas[i].bodega;
-                this.database.Inventario[i].ingreso = listas[i].creacion;
-                this.database.Inventario[i].producto = listas[i].producto;
-                this.database.Inventario[i].tipo = 'producto';
-                this.database.Inventario[i].cantidad = listas[i].cantidad;
-                this.database.Inventario[i].precio = listas[i].precio;
-                this.database.Inventario[i].costo = listas[i].costo;
-                this.database.Inventario[i].proveedor = listas[i].proveedor;
-                this.database.Inventario[i].usuario = listas[i].usuario;
-                this.database.Inventario[i].documento = listas[i].documento;
                 index = 'listas/'+i
                 data[index] = listas[i];
-                index = 'inventario/'+i
-                data[index] = this.database.Inventario[i];
+                this.database.Listas[i] = listas[i];
+                let test = false;
+                for(let j in this.database.Inventario){
+                    if(this.database.Inventario[j].producto == listas[i].producto && this.database.Inventario[j].bodega == listas[i].bodega){
+                        this.database.Inventario[j].cantidad += listas[i].cantidad;
+                        index = 'inventario/'+j
+                        data[index] = this.database.Inventario[j];
+                        test = true;
+                        break
+                    }
+                }
+                if(!test){
+                    const key = firebase.database().ref().push().key;
+                    this.database.Inventario[key] = new Inventario();
+                    this.database.Inventario[key].bodega = listas[i].bodega;
+                    this.database.Inventario[key].ingreso = listas[i].creacion;
+                    this.database.Inventario[key].producto = listas[i].producto;
+                    this.database.Inventario[key].tipo = 'producto';
+                    this.database.Inventario[key].cantidad = listas[i].cantidad;
+                    this.database.Inventario[key].precio = listas[i].precio;
+                    this.database.Inventario[key].costo = listas[i].costo;
+                    this.database.Inventario[key].proveedor = listas[i].proveedor;
+                    this.database.Inventario[key].usuario = listas[i].usuario;
+                    this.database.Inventario[key].documento = listas[i].documento;
+                    index = 'inventario/'+key
+                    data[index] = this.database.Inventario[key];
+                }
             }
             console.log(doc, listas, data)
             await firebase.database().ref().update(data).then(async a=>{
@@ -641,6 +650,13 @@ export class DataService {
             })
         }
     // ---- Generales ---------------------------------------------
+        getKeyByValue(objects, value,key) { 
+            for(let i in objects){
+                if(objects[i][key] == value){
+                    return objects[i].key
+                }
+            }
+        }
         async CloudFunctions(funcion:string,data:any): Promise<any>{
             let este = this;
             const loading = await this.loadingController.create({

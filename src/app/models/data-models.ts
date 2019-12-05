@@ -54,6 +54,7 @@
             public largo: number // largo en metros[m] de la bodega
             public ancho: number // ancho en metros[m] de la bodega
             public alto: number // alto en metros[m] de la bodega
+            public espacioDisponible: number // espacioDisponible en metros[m] de la bodega
         constructor() {
             if(!this.creacion){
                 this.creacion = new Date()
@@ -69,6 +70,9 @@
             }
             if (!this.cantidad) {
                 this.cantidad = 0;
+            }
+            if (!this.espacioDisponible) {
+                this.espacioDisponible = (this.alto * this.largo * this.ancho);
             }
             if (!this.descripcion) {
                 this.descripcion = "";
@@ -148,6 +152,9 @@
             if(!this.descuento){
                 this.descuento = 0
             }
+        }
+        get Tamaño(){
+            return ((this.alto * this.largo * this.ancho)/100)
         }
     }
     export class Documento{
@@ -270,6 +277,9 @@
                 return (this.precio * (1 - this.descuento) * this.cantidad)
             }
         }
+        Ocupacion(data: LocalDatabase){
+            return data.Productos[this.producto].Tamaño * this.cantidad;
+        }
     }
     export class Inventario {
         // entradas efectivas al inventario
@@ -334,6 +344,9 @@
             if(!this.key){
                 this.key = ''
             }
+        }
+        Ocupacion(data: LocalDatabase){
+            return data.Productos[this.producto].Tamaño * this.cantidad;
         }
     }
     export class Pago {

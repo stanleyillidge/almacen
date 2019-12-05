@@ -31,7 +31,7 @@
       <mat-label>Productos</mat-label>
       <input type="text" aria-label="Number" matInput [formControl]="ProductoControl" [matAutocomplete]="auto2">
       <mat-autocomplete #auto2="matAutocomplete">
-        <mat-option (onSelectionChange)="change($event)" *ngFor="let productos of filteredProductos | async" [value]="productos">
+        <mat-option (onSelectionChange)="productosChange($event)" *ngFor="let productos of filteredProductos | async" [value]="productos">
           {{productos}}
         </mat-option>
       </mat-autocomplete>
@@ -39,7 +39,7 @@
   </ion-col>
   <ion-col warp>
     <mat-form-field class="num2">
-      <input matInput [formControl]="CantidadControl" #cantidad maxlength="5" placeholder="Cantidad">
+      <input (input)="cantidadChange($event)" matInput [formControl]="CantidadControl" #cantidad maxlength="5" placeholder="Cantidad">
     </mat-form-field>
   </ion-col>
   <ion-col style="padding: 0 0 0 10vw;" warp>

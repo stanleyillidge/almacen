@@ -24,7 +24,7 @@ export class CreateIngresoPage implements OnInit {
   filteredProductos: Observable<string[]>;
 
   BodegasControl = new FormControl();
-  bodegas: string[] = [];
+  bodegas: any = {};
   filteredBodegas: Observable<string[]>;
 
   CantidadControl = new FormControl();
@@ -48,6 +48,7 @@ export class CreateIngresoPage implements OnInit {
   TipoUsuario: string;
   disabledfab: boolean = false;
   descMax: number = 0;
+  UnidxEspacioDisp: any = {};
   
   constructor(
     public navCtrl: NavController,
@@ -59,8 +60,12 @@ export class CreateIngresoPage implements OnInit {
     this.database = this.ds.Database
     this.total = {};
     this.lista = {};
+
     this.productos['array'] = [];
     this.productos['obj'] = {};
+    this.bodegas['array'] = [];
+    this.bodegas['obj'] = {};
+
     this.documento = {};
     this.total['costo'] = 0;
     this.total['unid'] = 0;
@@ -111,7 +116,44 @@ export class CreateIngresoPage implements OnInit {
       }
     });
   }
-  change(e){
+  cantidadChange(e){
+    let este = this
+    if(this.mov == 'compra'){
+      console.log('cantidad event',e)
+      if(this.ProductoControl.value != ''){
+        const prodkey = this.productos.obj[this.ProductoControl.value];
+        this.calculaEspacioBodegas(prodkey,e.target.value)
+      }
+    }
+  }
+  calculaEspacioBodegas(prodkey:string,cantidad:number){
+    let este = this
+    let test = false
+    const titulo = 'Alerta';
+    let mensaje = 'Ninguna bodega tiene capacidad para toda la mercancia';
+    const volumen = this.database.Productos[prodkey].Tamaño * cantidad
+    this.bodegas.array = [];
+    Object.keys(this.database.Bodegas).map(function(i){
+      let espDisp = (este.database.Bodegas[i].espacioDisponible*0.85);
+      // ojo estas son las unidades de producto que caben en el volumen disponible en bodega
+      este.UnidxEspacioDisp[i] = Math.trunc(espDisp / este.database.Productos[prodkey].Tamaño);
+      if( espDisp >= volumen){
+        este.bodegas.array.push(este.database.Bodegas[i].nombre)
+        test = true;
+      }else{
+        mensaje = mensaje + ', la bodega ' + este.database.Bodegas[i].nombre + ' puede recibir ' + este.UnidxEspacioDisp[i]
+      }
+    });
+    if(!test){
+      this.ds.presentAlert(titulo,mensaje)
+    }
+    this.filteredBodegas = this.BodegasControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filterBodegas(value))
+      );
+  }
+  productosChange(e){
     if(this.mov == 'venta'){
       console.log(e)
       const key = this.productos.obj[e.source.value];
@@ -332,6 +374,7 @@ export class CreateIngresoPage implements OnInit {
         this.documento[this.DocPushID].valor = this.total['costo'];
         this.documento[this.DocPushID].numProductos = this.total['unid'];
         this.lista[key].key = key;
+        this.lista[key].estado = this.estadoControl.value;
         this.lista[key].tipo = this.documento[this.DocPushID].tipo;
         this.lista[key].creacion = this.documento[this.DocPushID].creacion;
         this.lista[key].bodega =  this.getKeyByValue(this.database.Bodegas, this.BodegasControl.value,'nombre');
@@ -352,6 +395,7 @@ export class CreateIngresoPage implements OnInit {
         this.ProductoControl.setValue('');
         this.CantidadControl.setValue('');
         this.costoControl.setValue('');
+        this.BodegasControl.setValue('');
         this.descuentoControl.setValue(0);
         console.log(this.documento, this.lista)
       }
@@ -448,14 +492,16 @@ export class CreateIngresoPage implements OnInit {
     }
     if(data.Bodegas){
       Object.keys(data.Bodegas).map(function(i){
-        este.bodegas.push(data.Bodegas[i].nombre)
+        este.bodegas.array.push(data.Bodegas[i].nombre)
+        este.bodegas.obj[data.Bodegas[i].nombre] = data.Bodegas[i];
+        este.bodegas.obj[i] = data.Bodegas[i];
       });
     }
     for(let i in this.usuarios[this.TipoUsuario]){
       this.proveedores.push(this.usuarios[this.TipoUsuario][i].nombre)
     }
   }
-  getKeyByValue(objects, value,key) { 
+  getKeyByValue(objects, value,key) {
     for(let i in objects){
       if(objects[i][key] == value){
         return objects[i].key
@@ -472,6 +518,6 @@ export class CreateIngresoPage implements OnInit {
   }
   private _filterBodegas(values: string): string[] {
     const filterValues = values.toLowerCase();
-    return this.bodegas.filter(options => options.toLowerCase().includes(filterValues));
+    return this.bodegas.array.filter(options => options.toLowerCase().includes(filterValues));
   }
 }

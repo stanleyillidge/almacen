@@ -148,7 +148,7 @@ export class CreateIngresoPage implements OnInit {
         mensaje = mensaje + ', la bodega ' + este.bodegas.obj[i].nombre + ' puede recibir ' + este.UnidxEspacioDisp[i]
       }
     });
-    if(!test){
+    if(!test['t']){
       this.CantidadControl.setValue('')
       this.ds.presentAlert(titulo,mensaje)
     }
@@ -204,6 +204,7 @@ export class CreateIngresoPage implements OnInit {
   }
   creaFormulario(data:Documento){
     console.log(data)
+    this.total['unid'] = 0;
     this.listaProductos = [];
     this.disabled = true;
     this.disabledfab = true;
@@ -404,7 +405,7 @@ export class CreateIngresoPage implements OnInit {
         if(testB['t']){
           // si no hay espacio en la bodega seleccionada, asigna en la inmediatamenete siguiente con capacidad
           console.log('Bodega con espacio',this.bodegas.obj[testB['key']])
-          if(i != testB['key']){
+          if(this.lista[key].bodega != testB['key']){
             const mensaje = 'La bodega '+this.bodegas.obj[this.lista[key].bodega].nombre+
             ' no tiene capacidad, le fue asignada la bodega '+this.bodegas.obj[testB['key']].nombre
             this.ds.presentAlert('Alerta',mensaje)

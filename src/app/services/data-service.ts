@@ -41,7 +41,7 @@ export class DataService {
         this.plataforma.desktop = this.platform.is("desktop");
         this.plataforma.android = this.platform.is("android");
         this.plataforma.cordova = this.platform.is("cordova");
-        // this.storage.clear();// quitar cuando este en produccion
+        this.storage.clear();// quitar cuando este en produccion
     }
     // ---- Database ----------------------------------------------
         async initDatabase(){
@@ -546,6 +546,11 @@ export class DataService {
                 index = 'listas/'+i
                 data[index] = listas[i];
                 this.database.Listas[i] = listas[i];
+                const VolumenOcupado = this.database.Listas[i].Ocupacion(this.database);
+                console.log(this.database.Bodegas[listas[i].bodega].espacioDisponible,VolumenOcupado)
+                this.database.Bodegas[listas[i].bodega].espacioDisponible -= Number(VolumenOcupado);
+                index = 'bodegas/'+listas[i].bodega+'/espacioDisponible'
+                data[index] = this.database.Bodegas[listas[i].bodega].espacioDisponible;
                 let test = false;
                 for(let j in this.database.Inventario){
                     if(this.database.Inventario[j].producto == listas[i].producto && this.database.Inventario[j].bodega == listas[i].bodega){

@@ -154,7 +154,7 @@
             }
         }
         get Tamaño(){
-            return ((this.alto * this.largo * this.ancho)/100)
+            return ((this.alto * this.largo * this.ancho)/1)
         }
     }
     export class Documento{

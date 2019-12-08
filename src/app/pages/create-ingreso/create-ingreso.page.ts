@@ -116,14 +116,43 @@ export class CreateIngresoPage implements OnInit {
       }
     });
   }
-  cantidadChange(e){
+  cantidadChange(cantidad:number){
     let este = this
     if(this.mov == 'compra'){
       // console.log('cantidad event',e)
       if(this.ProductoControl.value != ''){
         const prodkey = this.productos.obj[this.ProductoControl.value];
-        this.calculaEspacioBodegas(prodkey,e.target.value)
+        this.calculaEspacioBodegas(prodkey,cantidad)//e.target.value)
       }
+    } else if(this.mov == 'venta'){
+      este.bodegas.obj={};
+      este.bodegas.array = [];
+      let test = false;
+      const prod = this.getKeyByValue(this.database.Productos, this.ProductoControl.value,'nombre');
+      let mensaje = 'Ninguna bodega tiene disponibilidad total del producto'
+      Object.entries(this.database.Inventario).filter(
+      ([key,inv])=>inv.cantidad>=cantidad && inv.producto == prod).forEach(
+        ([key,inv])=>{
+          este.bodegas.array.push(este.database.Bodegas[inv.bodega].nombre)
+          let modelo = new Bodega();
+          este.bodegas.obj[inv.bodega] = este.ds.iteraModelo(modelo,este.database.Bodegas[inv.bodega])
+          test = true
+        })
+      this.filteredBodegas = this.BodegasControl.valueChanges.pipe(
+        startWith(''),
+        map(value => this._filterBodegas(value))
+      );
+      if(!test){
+        this.CantidadControl.setValue('');
+        Object.entries(this.database.Inventario).filter(
+          ([key,inv])=>inv.producto == prod).forEach(
+            ([key,inv])=>{
+              mensaje += ', Hay <strong>'+inv.cantidad+'</strong> en la bodega: '+este.database.Bodegas[inv.bodega].nombre+'\n'
+            })
+
+        this.ds.presentAlert('Alerta',mensaje);
+      }
+      console.log(este.bodegas.obj)
     }
   }
   calculaEspacioBodegas(prodkey:string,cantidad:number){
@@ -139,7 +168,7 @@ export class CreateIngresoPage implements OnInit {
       let espDisp = (este.bodegas.obj[i].espacioDisponible*0.85);
       // ojo estas son las unidades de producto que caben en el volumen disponible en bodega
       este.UnidxEspacioDisp[i] = Math.trunc(espDisp / este.database.Productos[prodkey].Tamaño);
-      console.log('Consulta bodega',espDisp, volumen)
+      console.log('Consulta bodega',este.bodegas.obj[i].nombre, espDisp, volumen)
       if( espDisp >= volumen){
         este.bodegas.array.push(este.bodegas.obj[i].nombre)
         test['t'] = true;
@@ -495,15 +524,25 @@ export class CreateIngresoPage implements OnInit {
     }
   }
   ngOnInit(){}
-  actualiza(data){
+  actualiza(data:LocalDatabase){
     let este = this;
     este.usuariost = {};
     este.usuarios = {};
     if(data.Productos){
-      Object.keys(data.Productos).map(function(i){
-        este.productos.array.push(data.Productos[i].nombre)
-        este.productos.obj[data.Productos[i].nombre] = i;
-      });
+      if(este.mov == 'compra'){
+        Object.keys(data.Productos).map(function(i){
+          este.productos.array.push(data.Productos[i].nombre)
+          este.productos.obj[data.Productos[i].nombre] = i;
+        });
+      }else if(este.mov == 'venta'){
+        Object.entries(data.Inventario).map(([key,inv]) => inv.producto)
+        .filter((value, index, self) => self.indexOf(value) === index).forEach(
+          (inv)=>{
+            este.productos.array.push(data.Productos[inv].nombre)
+            let modelo = new Bodega();
+            este.productos.obj[data.Productos[inv].nombre] = inv;
+          })
+      }
     }
     if(data.Usuarios){
       Object.keys(data.Usuarios).map(function(i){

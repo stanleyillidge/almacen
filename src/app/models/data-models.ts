@@ -387,5 +387,8 @@
         public Inventario: { [key: string]: Inventario };
         public Pagos: { [key: string]: Pago };
         constructor(){}
+        ProductosEnInventario(Prodkey:string){
+            for(let i in this.Inventario){}
+        }
     }
 // ------------------------------

@@ -41,7 +41,7 @@ export class DataService {
         this.plataforma.desktop = this.platform.is("desktop");
         this.plataforma.android = this.platform.is("android");
         this.plataforma.cordova = this.platform.is("cordova");
-        this.storage.clear();// quitar cuando este en produccion
+        // this.storage.clear();// quitar cuando este en produccion
     }
     // ---- Database ----------------------------------------------
         async initDatabase(){
@@ -547,12 +547,12 @@ export class DataService {
                 data[index] = listas[i];
                 this.database.Listas[i] = listas[i];
                 const VolumenOcupado = this.database.Listas[i].Ocupacion(this.database);
-                console.log(this.database.Bodegas[listas[i].bodega].espacioDisponible,VolumenOcupado)
+                // console.log(this.database.Bodegas[listas[i].bodega].espacioDisponible,VolumenOcupado)
                 this.database.Bodegas[listas[i].bodega].espacioDisponible -= Number(VolumenOcupado);
                 index = 'bodegas/'+listas[i].bodega+'/espacioDisponible'
                 data[index] = this.database.Bodegas[listas[i].bodega].espacioDisponible;
                 let test = false;
-                for(let j in this.database.Inventario){
+                for(let j in this.database.Inventario){ // se verifica si el producto se encuentra en bodega y se actualiza la cantidad
                     if(this.database.Inventario[j].producto == listas[i].producto && this.database.Inventario[j].bodega == listas[i].bodega){
                         this.database.Inventario[j].cantidad += listas[i].cantidad;
                         index = 'inventario/'+j
@@ -561,9 +561,10 @@ export class DataService {
                         break
                     }
                 }
-                if(!test){
+                if(!test){ // Si no existe una pareja producto-bodega se genera un nuevo ingreso al inventario
                     const key = firebase.database().ref().push().key;
                     this.database.Inventario[key] = new Inventario();
+                    this.database.Inventario[key].key = key;
                     this.database.Inventario[key].bodega = listas[i].bodega;
                     this.database.Inventario[key].ingreso = listas[i].creacion;
                     this.database.Inventario[key].producto = listas[i].producto;

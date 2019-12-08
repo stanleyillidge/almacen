@@ -39,7 +39,7 @@
   </ion-col>
   <ion-col warp>
     <mat-form-field class="num2">
-      <input (input)="cantidadChange($event)" matInput [formControl]="CantidadControl" #cantidad maxlength="5" placeholder="Cantidad">
+      <input (input)="cantidadChange($event.target.value)" matInput [formControl]="CantidadControl" #cantidad maxlength="5" placeholder="Cantidad">
     </mat-form-field>
   </ion-col>
   <ion-col style="padding: 0 0 0 10vw;" warp>

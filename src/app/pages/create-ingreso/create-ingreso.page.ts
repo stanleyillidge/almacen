@@ -3,11 +3,12 @@ import { NavController, AlertController } from '@ionic/angular';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from 'src/app/services/data-service';
-import { Documento, LocalDatabase, ListaDetallada, Bodega } from 'src/app/models/data-models';
+import { Documento, LocalDatabase, ListaDetallada, Bodega, Inventario } from 'src/app/models/data-models';
 import { Observable } from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import * as firebase from 'firebase/app';
 import 'firebase/database';
+import { isNull, isUndefined } from 'util';
 
 @Component({
   selector: 'app-create-ingreso',
@@ -49,6 +50,7 @@ export class CreateIngresoPage implements OnInit {
   disabledfab: boolean = false;
   descMax: number = 0;
   UnidxEspacioDisp: any = {};
+  inventario: { [key: string]: Inventario };
   
   constructor(
     public navCtrl: NavController,
@@ -129,8 +131,8 @@ export class CreateIngresoPage implements OnInit {
       este.bodegas.array = [];
       let test = false;
       const prod = this.getKeyByValue(this.database.Productos, this.ProductoControl.value,'nombre');
-      let mensaje = 'Ninguna bodega tiene disponibilidad total del producto'
-      Object.entries(this.database.Inventario).filter(
+      let mensaje = 'Ninguna bodega tiene disponibilidad para '+cantidad+' unidad(es) de producto'
+      Object.entries(this.inventario).filter(
       ([key,inv])=>inv.cantidad>=cantidad && inv.producto == prod).forEach(
         ([key,inv])=>{
           este.bodegas.array.push(este.database.Bodegas[inv.bodega].nombre)
@@ -144,7 +146,7 @@ export class CreateIngresoPage implements OnInit {
       );
       if(!test){
         this.CantidadControl.setValue('');
-        Object.entries(this.database.Inventario).filter(
+        Object.entries(this.inventario).filter(
           ([key,inv])=>inv.producto == prod).forEach(
             ([key,inv])=>{
               mensaje += ', Hay <strong>'+inv.cantidad+'</strong> en la bodega: '+este.database.Bodegas[inv.bodega].nombre+'\n'
@@ -152,7 +154,7 @@ export class CreateIngresoPage implements OnInit {
 
         this.ds.presentAlert('Alerta',mensaje);
       }
-      console.log(este.bodegas.obj)
+      console.log(este.inventario,este.bodegas.obj)
     }
   }
   calculaEspacioBodegas(prodkey:string,cantidad:number){
@@ -164,7 +166,7 @@ export class CreateIngresoPage implements OnInit {
     let mensaje = 'Ninguna bodega tiene capacidad para toda la mercancia';
     const volumen = this.database.Productos[prodkey].Tamaño * cantidad
     this.bodegas.array = [];
-    Object.keys(this.database.Bodegas).map(function(i){
+    Object.keys(este.bodegas.obj).map(function(i){
       let espDisp = (este.bodegas.obj[i].espacioDisponible*0.85);
       // ojo estas son las unidades de producto que caben en el volumen disponible en bodega
       este.UnidxEspacioDisp[i] = Math.trunc(espDisp / este.database.Productos[prodkey].Tamaño);
@@ -189,12 +191,18 @@ export class CreateIngresoPage implements OnInit {
       return test
   }
   productosChange(e){
-    if(this.mov == 'venta'){
+    if(this.mov == 'venta' && e.source.selected){
       console.log(e)
       const key = this.productos.obj[e.source.value];
       this.costoControl.enable();
+      this.descuentoControl.enable();
       this.descMax = this.database.Productos[key].descuento;
-      this.descuentoControl = new FormControl(0, [Validators.max(this.descMax), Validators.min(0)]);
+      if(this.descMax == 0){
+        this.descuentoControl.disable();
+      }else{
+        this.descuentoControl.enable();
+        this.descuentoControl = new FormControl(0, [Validators.max(this.descMax), Validators.min(0)]);
+      }
       this.costoControl.setValue(this.database.Productos[key].precio);
       this.costoControl.disable();
     }
@@ -380,6 +388,7 @@ export class CreateIngresoPage implements OnInit {
     }
   }
   addProducto(){
+    let este = this;
     let comprador
     let proveedor
     switch (this.mov) {
@@ -429,21 +438,46 @@ export class CreateIngresoPage implements OnInit {
         this.lista[key]['nombre'] = this.database.Productos[i].nombre;
 
         const VolumenOcupado = this.lista[key].Ocupacion(this.database);
-        const testB = this.calculaEspacioBodegas(this.lista[key].producto,this.lista[key].cantidad)
-        console.log(testB,this.bodegas.obj[this.lista[key].bodega].espacioDisponible,VolumenOcupado)
-        if(testB['t']){
-          // si no hay espacio en la bodega seleccionada, asigna en la inmediatamenete siguiente con capacidad
-          console.log('Bodega con espacio',this.bodegas.obj[testB['key']])
-          if(this.lista[key].bodega != testB['key']){
-            const mensaje = 'La bodega '+this.bodegas.obj[this.lista[key].bodega].nombre+
-            ' no tiene capacidad, le fue asignada la bodega '+this.bodegas.obj[testB['key']].nombre
-            this.ds.presentAlert('Alerta',mensaje)
-          }
-          this.bodegas.obj[testB['key']].espacioDisponible -= Number(VolumenOcupado);
-        }else{
-          const mensaje = 'Ninguna bodega tiene capacidad para almacenar el pedido'
-          this.ds.presentAlert('Alerta',mensaje)
-          return
+        switch (this.mov) {
+          case 'compra':
+            const testB = this.calculaEspacioBodegas(this.lista[key].producto,this.lista[key].cantidad)
+            console.log(testB,this.bodegas.obj[this.lista[key].bodega].espacioDisponible,VolumenOcupado)
+            if(testB['t']){
+              // si no hay espacio en la bodega seleccionada, asigna en la inmediatamenete siguiente con capacidad
+              console.log('Bodega con espacio',this.bodegas.obj[testB['key']])
+              if(this.lista[key].bodega != testB['key']){
+                const mensaje = 'La bodega '+this.bodegas.obj[this.lista[key].bodega].nombre+
+                ' no tiene capacidad, le fue asignada la bodega '+this.bodegas.obj[testB['key']].nombre
+                this.ds.presentAlert('Alerta',mensaje)
+              }
+              this.bodegas.obj[testB['key']].espacioDisponible -= Number(VolumenOcupado);
+            }else{
+              const mensaje = 'Ninguna bodega tiene capacidad para almacenar el pedido'
+              this.ds.presentAlert('Alerta',mensaje)
+              return
+            }
+            break;
+          case 'venta':
+            this.bodegas.obj[this.lista[key].bodega].espacioDisponible += VolumenOcupado;
+            Object.entries(this.inventario).filter(
+              ([keyx,inv])=>inv.bodega>=this.lista[key].bodega && inv.producto == this.lista[key].producto).forEach(
+                ([keyx,inv])=>{
+                  this.inventario[keyx].cantidad -= this.lista[key].cantidad;
+                  if(this.inventario[keyx].cantidad == 0){
+                    delete this.inventario[keyx]
+                    este.productos.array = []
+                    este.productos.obj = {}
+                    Object.entries(este.inventario).map(([key,inv]) => inv.producto)
+                    .filter((value, index, self) => self.indexOf(value) === index).forEach(
+                      (inv)=>{
+                        este.productos.array.push(este.database.Productos[inv].nombre)
+                        este.productos.obj[este.database.Productos[inv].nombre] = inv;
+                      })
+                  }
+                })
+            break;
+          default:
+            break;
         }
         this.listaProductos.unshift(this.lista[key]);
         this.ProductoControl.setValue('');
@@ -457,11 +491,11 @@ export class CreateIngresoPage implements OnInit {
   }
   async creaDocumento(){
     let este = this
-    console.log(this.accion,this.estadoControl.value)
+    console.log(this.accion,this.estadoControl.value,this.ProveedoresControl.value,this.listaProductos.length)
     if(this.accion == 'crear'){
       if(this.listaProductos.length>0){
-        if(this.ProveedoresControl.value != ''){
-
+        if(this.ProveedoresControl.value != '' && !isNull(this.ProveedoresControl.value) && !isUndefined(this.ProveedoresControl.value)){
+  
           let comprador = this.getKeyByValue(this.usuarios[this.TipoUsuario], this.ProveedoresControl.value,'nombre');
           let proveedor = 'su empresa'
           if(this.mov == 'compra'){
@@ -472,15 +506,23 @@ export class CreateIngresoPage implements OnInit {
           this.documento[this.DocPushID].comprador = comprador;
           this.documento[this.DocPushID].estado = this.estadoControl.value;
           this.documento[this.DocPushID].creacion = new Date();
-
+  
           this.ds.creaIngreso(this.documento[this.DocPushID],this.lista).then(a=>{
             este.navCtrl.pop()
           })
         }else{
-          this.ds.presentAlert('Error','debes elegir un proveedor y anexar producutos')
+          let mensaje = 'Debes elegir un cliente y anexar producutos'
+          if(this.mov == 'compra'){
+            mensaje = 'Debes elegir un proveedor y anexar producutos'
+          }
+          this.ds.presentAlert('Error',mensaje)
         }
       }else{
-        this.ds.presentAlert('Error','debes elegir un proveedor y anexar producutos')
+        let mensaje = 'Debes elegir un cliente y anexar producutos'
+        if(this.mov == 'compra'){
+          mensaje = 'Debes elegir un proveedor y anexar producutos'
+        }
+        this.ds.presentAlert('Error',mensaje)
       }
     }else if(this.accion == 'editar' && (this.estadoControl.value == 'anulado')){
       this.documento[this.DocPushID] = this.database.Documentos[this.DocPushID]
@@ -539,7 +581,6 @@ export class CreateIngresoPage implements OnInit {
         .filter((value, index, self) => self.indexOf(value) === index).forEach(
           (inv)=>{
             este.productos.array.push(data.Productos[inv].nombre)
-            let modelo = new Bodega();
             este.productos.obj[data.Productos[inv].nombre] = inv;
           })
       }
@@ -564,8 +605,15 @@ export class CreateIngresoPage implements OnInit {
       });
     }
     for(let i in this.usuarios[this.TipoUsuario]){
+      let modelo = new Bodega();
       this.proveedores.push(this.usuarios[this.TipoUsuario][i].nombre)
     }
+    this.inventario = {};
+    for(let i in data.Inventario){
+      let modelo = new Inventario();
+      this.inventario[i] = este.ds.iteraModelo(modelo,data.Inventario[i])
+    }
+    // console.log('Actu',this.inventario)
   }
   getKeyByValue(objects, value,key) {
     for(let i in objects){

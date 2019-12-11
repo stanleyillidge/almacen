@@ -41,7 +41,7 @@ export class DataService {
         this.plataforma.desktop = this.platform.is("desktop");
         this.plataforma.android = this.platform.is("android");
         this.plataforma.cordova = this.platform.is("cordova");
-        // this.storage.clear();// quitar cuando este en produccion
+        this.storage.clear();// quitar cuando este en produccion
     }
     // ---- Database ----------------------------------------------
         async initDatabase(){
@@ -539,6 +539,7 @@ export class DataService {
             }
             this.database.Documentos[doc.key] = doc;
             let index = ''
+            let rem = []
             const data = {}
             index = 'documentos/'+doc.key
             data[index] = doc;
@@ -548,41 +549,70 @@ export class DataService {
                 this.database.Listas[i] = listas[i];
                 const VolumenOcupado = this.database.Listas[i].Ocupacion(this.database);
                 // console.log(this.database.Bodegas[listas[i].bodega].espacioDisponible,VolumenOcupado)
-                this.database.Bodegas[listas[i].bodega].espacioDisponible -= Number(VolumenOcupado);
-                index = 'bodegas/'+listas[i].bodega+'/espacioDisponible'
-                data[index] = this.database.Bodegas[listas[i].bodega].espacioDisponible;
-                let test = false;
-                for(let j in this.database.Inventario){ // se verifica si el producto se encuentra en bodega y se actualiza la cantidad
-                    if(this.database.Inventario[j].producto == listas[i].producto && this.database.Inventario[j].bodega == listas[i].bodega){
-                        this.database.Inventario[j].cantidad += listas[i].cantidad;
-                        index = 'inventario/'+j
-                        data[index] = this.database.Inventario[j];
-                        test = true;
-                        break
-                    }
-                }
-                if(!test){ // Si no existe una pareja producto-bodega se genera un nuevo ingreso al inventario
-                    const key = firebase.database().ref().push().key;
-                    this.database.Inventario[key] = new Inventario();
-                    this.database.Inventario[key].key = key;
-                    this.database.Inventario[key].bodega = listas[i].bodega;
-                    this.database.Inventario[key].ingreso = listas[i].creacion;
-                    this.database.Inventario[key].producto = listas[i].producto;
-                    this.database.Inventario[key].tipo = 'producto';
-                    this.database.Inventario[key].cantidad = listas[i].cantidad;
-                    this.database.Inventario[key].precio = listas[i].precio;
-                    this.database.Inventario[key].costo = listas[i].costo;
-                    this.database.Inventario[key].proveedor = listas[i].proveedor;
-                    this.database.Inventario[key].usuario = listas[i].usuario;
-                    this.database.Inventario[key].documento = listas[i].documento;
-                    index = 'inventario/'+key
-                    data[index] = this.database.Inventario[key];
+                switch (doc.tipo) {
+                    case 'compra':
+                        this.database.Bodegas[listas[i].bodega].espacioDisponible -= Number(VolumenOcupado);
+                        index = 'bodegas/'+listas[i].bodega+'/espacioDisponible'
+                        data[index] = this.database.Bodegas[listas[i].bodega].espacioDisponible;
+                        let test = false;
+                        for(let j in this.database.Inventario){ // se verifica si el producto se encuentra en bodega y se actualiza la cantidad
+                            if(this.database.Inventario[j].producto == listas[i].producto && this.database.Inventario[j].bodega == listas[i].bodega){
+                                this.database.Inventario[j].cantidad += listas[i].cantidad;
+                                index = 'inventario/'+j
+                                data[index] = this.database.Inventario[j];
+                                test = true;
+                                break
+                            }
+                        }
+                        if(!test){ // Si no existe una pareja producto-bodega se genera un nuevo ingreso al inventario
+                            const key = firebase.database().ref().push().key;
+                            const modelo = new Inventario();
+                            this.database.Inventario[key] = this.iteraModelo(modelo,listas[i])
+                            // this.database.Inventario[key] = new Inventario();
+                            // this.database.Inventario[key].key = key;
+                            // this.database.Inventario[key].bodega = listas[i].bodega;
+                            // this.database.Inventario[key].ingreso = listas[i].creacion;
+                            // this.database.Inventario[key].producto = listas[i].producto;
+                            // this.database.Inventario[key].tipo = 'producto';
+                            // this.database.Inventario[key].cantidad = listas[i].cantidad;
+                            // this.database.Inventario[key].precio = listas[i].precio;
+                            // this.database.Inventario[key].costo = listas[i].costo;
+                            // this.database.Inventario[key].proveedor = listas[i].proveedor;
+                            // this.database.Inventario[key].usuario = listas[i].usuario;
+                            // this.database.Inventario[key].documento = listas[i].documento;
+                            index = 'inventario/'+key
+                            data[index] = this.database.Inventario[key];
+                        }
+                      break;
+                    case 'venta':
+                            this.database.Bodegas[listas[i].bodega].espacioDisponible += Number(VolumenOcupado);
+                            index = 'bodegas/'+listas[i].bodega+'/espacioDisponible'
+                            data[index] = this.database.Bodegas[listas[i].bodega].espacioDisponible;
+                            for(let j in this.database.Inventario){ // se verifica si el producto se encuentra en bodega y se actualiza la cantidad
+                                if(this.database.Inventario[j].producto == listas[i].producto && this.database.Inventario[j].bodega == listas[i].bodega){
+                                    this.database.Inventario[j].cantidad -= listas[i].cantidad;
+                                    index = 'inventario/'+j
+                                    data[index] = this.database.Inventario[j];
+                                    if(this.database.Inventario[j].cantidad == 0){
+                                        rem.push(j)
+                                    }
+                                    break;
+                                }
+                            }
+                      break;
+                    default:
+                      break;
                 }
             }
             console.log(doc, listas, data)
             await firebase.database().ref().update(data).then(async a=>{
                 await este.storage.set('database', JSON.stringify(este.database)).then(()=>{
-                    loading.dismiss()
+                    for(let j in rem){
+                        console.log('Borrando el inventario',rem[j])
+                        delete este.database.Inventario[j];
+                        firebase.database().ref('inventario/'+rem[j]).remove()
+                    }
+                    loading.dismiss();
                     este.presentToastWithOptions('Documento ok',3000,'top')
                     este.InventarioObserver.next(este.database)
                     return true

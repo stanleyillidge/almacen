@@ -7,7 +7,7 @@ import { Documento, LocalDatabase, ListaDetallada, Bodega, Inventario } from 'sr
 import { Observable } from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import * as firebase from 'firebase/app';
-import 'firebase/database';
+import 'firebase/database';//eider
 import { isNull, isUndefined } from 'util';
 
 @Component({
